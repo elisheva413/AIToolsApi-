@@ -7,13 +7,13 @@ namespace Entities;
 
 public partial class OrdersItem
 {
-    public short OrderItemId { get; set; }
+    public int OrderItemId { get; set; }
 
-    public short ProductsId { get; set; }
+    public int ProductsId { get; set; }
 
-    public short OrderId { get; set; }
+    public int OrderId { get; set; }
 
-    public short Quantity { get; set; }
+    public int Quantity { get; set; }
 
     public virtual Order Order { get; set; }
 

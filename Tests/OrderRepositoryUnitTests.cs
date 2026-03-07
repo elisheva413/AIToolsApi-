@@ -39,7 +39,7 @@ namespace Tests
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal((short)200, result.OrderSum);
+            Assert.Equal((int)200, result.OrderSum);
         }
 
         [Fact]
@@ -66,7 +66,7 @@ namespace Tests
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal((short)250, result.OrderSum);
+            Assert.Equal((int)250, result.OrderSum);
         }
 
         [Fact]

@@ -1,5 +1,6 @@
 ﻿using Entities;
 using Repositeries;
+using Repositeries.Models;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -114,7 +115,7 @@ namespace Tests
             // Assert
             Assert.NotNull(result);
             Assert.True(result.OrderId > 0);
-            Assert.Equal((short)35, result.OrderSum);
+            Assert.Equal((int)35, result.OrderSum);
 
             var savedItemsCount = _dbContext.OrdersItems.Count(oi => oi.OrderId == result.OrderId);
             Assert.Equal(2, savedItemsCount);
@@ -148,7 +149,7 @@ namespace Tests
             // Assert
             Assert.NotNull(result);
             Assert.Equal(order.OrderId, result.OrderId);
-            Assert.Equal((short)20, result.OrderSum);
+            Assert.Equal((int)20, result.OrderSum);
             Assert.Equal(user.UserId, result.UserId);
         }
 

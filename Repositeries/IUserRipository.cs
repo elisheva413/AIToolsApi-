@@ -1,6 +1,7 @@
 ﻿
 using Entities;
 
+
 namespace Repositeries
 {
     public interface IUserRipository
@@ -8,7 +9,7 @@ namespace Repositeries
         Task<User> AddUser(User user);
         Task<User> GetUserById(int id);
         Task<List<User>> GetUsers();
-        Task<User> LogIn(User user);
+        Task<User?> LogIn(string userName, string password);
         Task UpdateUser(int id, User updateUser);
     }
 }

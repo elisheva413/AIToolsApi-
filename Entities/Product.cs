@@ -7,17 +7,27 @@ namespace Entities;
 
 public partial class Product
 {
-    public short ProductsId { get; set; }
+    public int ProductsId { get; set; }
 
-    public short CategoryId { get; set; }
+    public int CategoryId { get; set; }
 
     public string ProductsName { get; set; }
 
     public string ProductsDescreption { get; set; }
 
-    public double Price { get; set; }
+    public decimal Price { get; set; }
 
     public string ImgUrl { get; set; }
+
+    public string ImgUrl2 { get; set; }
+
+    public string Color { get; set; }
+
+    public string Material { get; set; }
+
+    public int Quantity { get; set; }
+
+    public bool IsActive { get; set; }
 
     public virtual Category Category { get; set; }
 

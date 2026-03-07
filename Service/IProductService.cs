@@ -5,6 +5,7 @@ namespace Service
 {
     public interface IProductService
     {
-        Task<FinalProducts> GetProducts(string? description, double? minPrice, double? maxPrice, short[]? categoriesId, int position = 1, int skip = 8);
+            Task<FinalProducts> GetProducts(int[]? categoryId, string? q, decimal? minPrice, decimal? maxPrice, string? color, string? material, bool? inStock, bool? isActive, string? sort, int? skip, int? position );
+            Task<ProductDTO?> GetProductByIdAsync(int productId);
+        }
     }
-}

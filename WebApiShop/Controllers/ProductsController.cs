@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Repositeries;
 using Service;
 using DTOs;
+using static Service.IProductService;
 
 
 
@@ -22,17 +23,40 @@ namespace WebApiShop.Controllers
             _productsService = productsService;
            
         }
-
         [HttpGet]
-        public async Task<ActionResult<FinalProducts>> Get(string? description, double? minPrice, double? maxPrice, short[]? categoriesId, int position = 1, int skip = 8)
+        public async Task<ActionResult<FinalProducts>> GetProducts(
+            [FromQuery] int[]? categoryId,
+            [FromQuery] string? q,
+            [FromQuery] decimal? minPrice,
+            [FromQuery] decimal? maxPrice,
+            [FromQuery] string? color,
+            [FromQuery] string? material,
+            [FromQuery] bool? inStock,
+            [FromQuery] bool? isActive,
+            [FromQuery] string? sort,
+            [FromQuery] int? skip,
+            [FromQuery] int? position)
         {
-            FinalProducts products = await _productsService.GetProducts(description, minPrice, maxPrice, categoriesId, position, skip);
-            if (products.Items.Count() == 0)
+            var result = await _productsService.GetProducts(
+                categoryId, q, minPrice, maxPrice,
+                color, material, inStock, isActive,
+                sort, skip, position);
+
+            if (result.Items == null || result.Items.Count == 0)
                 return NoContent();
-            return Ok(products);
+
+            return Ok(result);
         }
 
-       
-      
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ProductDTO>> GetById(int id)
+        {
+            var productDto = await _productsService.GetProductByIdAsync(id);
+            if (productDto == null)
+                return NotFound();
+            return Ok(productDto);
+        }
+
     }
 }

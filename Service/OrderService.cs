@@ -3,6 +3,8 @@ using DTOs;
 using Entities;
 using Repositeries;
 
+
+
 namespace Service
 {
     public class OrderService : IOrderService
@@ -16,26 +18,24 @@ namespace Service
             _mapper = mapper;
         }
 
-        //public async Task<List<User>> GetUsers()
-        //{
-        //    return await _userRipository.GetUsers();
-        //}
-
-        public async Task<OrderDTO> GetOrderById(int id)
+        public async Task<OrderDTO?> GetOrderById(int id)
         {
-            Order order = await _orderRepository.GetOrderById(id);
-            OrderDTO orderDto =_mapper.Map<Order,OrderDTO>(order);
-            return orderDto;
+            Order? order = await _orderRepository.GetOrderById(id);
+            if (order == null)
+                return null;
 
+            return _mapper.Map<OrderDTO>(order);
         }
+
 
         public async Task<OrderDTO> AddOrder(Order order)
         {
             Order newOrder = await _orderRepository.AddOrder(order);
             OrderDTO orderDto = _mapper.Map<Order, OrderDTO>(order);
             return orderDto;
-            ;
-        }
 
+           
+        }
+            
     }
 }

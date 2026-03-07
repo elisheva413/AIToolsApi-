@@ -4,7 +4,8 @@ namespace Repositeries
 {
     public interface IProductRepository
     {
-        Task<(List<Product> Items, int TotalCount)> GetProducts(string? description, double? minPrice, double? maxPrice, short[]? categoriesId, int position = 1, int skip = 8);
+        Task<(IEnumerable<Product> products, int total)> GetProducts(int[]? categoryId, string? q, decimal? minPrice, decimal? maxPrice, string? color, string? material, bool? inStock, bool? isActive, string? sort, int? skip, int? position);
 
+        Task<Product?> GetProductByIdAsync(int productId);
     }
 }

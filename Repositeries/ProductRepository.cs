@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 
 
+
 namespace Repositeries
 {
     public class ProductRepository : IProductRepository
@@ -15,23 +16,80 @@ namespace Repositeries
         {
             _store_215962135Context = store_215962135Context;
         }
-      
 
-        public async Task<(List<Product> Items,int TotalCount)> GetProducts(string? description,double? minPrice,double? maxPrice,short[]? categoriesId,int position = 1,int skip = 8)
+        public async Task<(IEnumerable<Product> products, int total)> GetProducts(int[]? categoryId, string? q, decimal? minPrice, decimal? maxPrice, string? color, string? material, bool? inStock, bool? isActive, string? sort, int? skip, int? position)
         {
-            var query = _store_215962135Context.Products.Where(product => (description == null ? (true) : (product.ProductsDescreption.Contains(description)))
-            && ((minPrice == null) ? (true) : (product.Price >= minPrice))
-            && ((maxPrice == null) ? (true) : (product.Price <= maxPrice))
-            && ((categoriesId.Length == 0) ? (true) : (categoriesId.Contains(product.CategoryId))))
-            .OrderBy(product => product.Price);
+            int pageSize = (skip.HasValue && skip.Value > 0) ? skip.Value : 12;
+            int page = (position.HasValue && position.Value > 0) ? position.Value : 1;
+
+            var query = _store_215962135Context.Products.AsQueryable();
+
+            bool activeFilter = isActive ?? true;
+            query = query.Where(p => p.IsActive == activeFilter);
+
+            if (categoryId != null && categoryId.Length > 0)
+                query = query.Where(p => categoryId.Contains(p.CategoryId));
+
+            if (minPrice.HasValue)
+                query = query.Where(p => p.Price >= minPrice.Value);
+
+            if (maxPrice.HasValue)
+                query = query.Where(p => p.Price <= maxPrice.Value);
+            //להגיד לזהבי לשנות שהוא יצליח לקחת גם וגם
+            
+            if (!string.IsNullOrWhiteSpace(color))
+            {
+                var colorList = color.Split(',').Select(c => c.Trim()).ToList();
+                query = query.Where(p => p.Color != null && colorList.Contains(p.Color));
+            }
+
+            if (!string.IsNullOrWhiteSpace(material))
+            {
+                var materialList = material.Split(',').Select(m => m.Trim()).ToList();
+                query = query.Where(p => p.Material != null && materialList.Contains(p.Material));
+            }
+
+            if (inStock == true)
+                query = query.Where(p => p.Quantity > 0);
+
+            if (!string.IsNullOrWhiteSpace(q))
+            {
+                q = q.Trim();
+                query = query.Where(p =>
+                    p.ProductsName.Contains(q) ||
+                    p.ProductsDescreption.Contains(q) ||
+                    (p.Color != null && p.Color.Contains(q)) ||
+                    (p.Material != null && p.Material.Contains(q))
+                );
+            }
+
+            if (string.Equals(sort, "desc", StringComparison.OrdinalIgnoreCase))
+                query = query.OrderByDescending(p => p.Price);
+            else if (string.Equals(sort, "asc", StringComparison.OrdinalIgnoreCase))
+                query = query.OrderBy(p => p.Price);
+            else
+                query = query.OrderBy(p => p.ProductsId);  
+
             Console.WriteLine(query.ToQueryString());
 
-            List<Product> products = await query.Skip((position - 1) * skip).Take(skip).Include(Product => Product.Category).ToListAsync();
-            int totalCount = await query.CountAsync();
-            
+            int total = await query.CountAsync();
 
+            List<Product> products = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Include(p => p.Category)
+                .ToListAsync();
 
-            return  (products, totalCount);
+            return (products, total);
         }
+
+
+        public async Task<Product?> GetProductByIdAsync(int productId)
+        {
+            return await _store_215962135Context.Products
+                .Include(p => p.Category)
+                .FirstOrDefaultAsync(p => p.ProductsId == productId);
+        }
+
     }
 }

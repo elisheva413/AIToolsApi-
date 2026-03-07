@@ -9,7 +9,7 @@ namespace Service
         Task<List<UserDTO>> GetUsers();
         Task<UserDTO> GetUserById(int id);
         Task<UserDTO> AddUser(UserRegisterDTO user);
-        Task<UserDTO> LogIn(UserLoginDTO user);
+        Task<UserPublicDTO?> LogIn(UserLoginDTO exestingUser);
         Task UpdateUser(int id, UserDTO updateUser);
        
     }

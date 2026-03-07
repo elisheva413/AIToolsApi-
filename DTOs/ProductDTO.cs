@@ -8,10 +8,15 @@ namespace DTOs
 {
     public record ProductDTO
     (
-        int ProductId,
-        string ProductName,
-        int Price,
-        string CategoryName,
-        string Description
+            int ProductsId,
+            int CategoryId,
+            string ProductsName,
+            string ProductsDescreption,
+            double Price,
+            string ImgUrl,
+            string ImgUrl2,
+			string Color,
+            string Material
     );
+  
 }

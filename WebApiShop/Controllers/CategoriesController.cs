@@ -31,6 +31,7 @@ namespace WebApiShop.Controllers
                 return NoContent();
             return Ok(categories);
         }
+
      
 
 

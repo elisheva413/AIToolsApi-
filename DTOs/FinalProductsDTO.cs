@@ -6,13 +6,11 @@ using System.Threading.Tasks;
 
 namespace DTOs
 {
-    public record UserRegisterDTO
+    public record FinalProducts
     (
-        string FirstName,
-        string LastName,
-        string UserName,
-        string Password
-
+        List<ProductDTO> Items,
+        int TotalCount,
+        bool HasNext,
+        bool HasPrev
     );
-    
 }

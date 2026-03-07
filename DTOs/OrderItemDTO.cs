@@ -6,8 +6,11 @@ using System.Threading.Tasks;
 
 namespace DTOs
 {
-    internal class OrderItemDTO
-    {
-
-    }
+    public record OrderItemDTO
+    (
+        int OrderItemId,
+        int ProductsId,
+        int OrderId,
+        int Quantity
+    );
 }

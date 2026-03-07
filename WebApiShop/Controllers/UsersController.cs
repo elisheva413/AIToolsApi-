@@ -37,11 +37,15 @@ namespace WebApiShop.Controllers
         }
 
         [HttpGet("{id}")]
+       
         public async Task<ActionResult<UserDTO>> GetById(int id)
         {
-            var user = await _userService.GetUserById(id);
-            return user != null ? Ok(user) : NotFound();
+            var userDto = await _userService.GetUserById(id);
+            if (userDto == null)
+                return NotFound();
+            return Ok(userDto);
         }
+
 
         [HttpPost]
         public async Task<ActionResult<UserDTO>> AddUser([FromBody] UserRegisterDTO newUser)
@@ -50,18 +54,20 @@ namespace WebApiShop.Controllers
             if (passwordScore < 2)
                 return BadRequest("Password is too weak.");
             var user = await _userService.AddUser(newUser);
-            return CreatedAtAction(nameof(GetById), new { id = user.Id }, user);
+            return CreatedAtAction(nameof(GetById), new { id = user.UserId}, user);
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<UserDTO>> LogIn([FromBody] UserLoginDTO existingUser)
+        public async Task<ActionResult<UserPublicDTO>> LogIn([FromBody] UserLoginDTO existingUser)
         {
             var user = await _userService.LogIn(existingUser);
             if (user == null)
                 return Unauthorized("Invalid credentials.");
-            _logger.LogInformation($"Login attempted with User Name,{existingUser.UserName} and password{existingUser.Password}");
+
+            _logger.LogInformation($"Login attempted with User Name {existingUser.UserName}");
             return Ok(user);
         }
+
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(int id, [FromBody] UserDTO updateUser)

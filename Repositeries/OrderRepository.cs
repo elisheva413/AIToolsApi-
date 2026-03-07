@@ -16,15 +16,17 @@ namespace Repositeries
             _store_215962135Context = store_215962135Context;
         }
 
-        public async Task<Order> GetOrderById(int id)
+        public async Task<Order?> GetOrderById(int id)
         {
             return await _store_215962135Context.Orders.FindAsync(id);
         }
+
         public async Task<Order> AddOrder(Order order)
         {
             await _store_215962135Context.Orders.AddAsync(order);
             await _store_215962135Context.SaveChangesAsync();
             return order;
+            
         }
 
 

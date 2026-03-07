@@ -60,7 +60,7 @@ namespace Tests
                 description: null,
                 minPrice: null,
                 maxPrice: null,
-                categoriesId: new short[] { },  
+                categoriesId: new int[] { },  
                 position: 1,
                 skip: 10
             );
@@ -90,7 +90,7 @@ namespace Tests
                 description: "smart",
                 minPrice: 50,
                 maxPrice: 1000,
-                categoriesId: new short[] { category.CategoryId },
+                categoriesId: new int[] { category.CategoryId },
                 position: 1,
                 skip: 10
             );
@@ -114,7 +114,7 @@ namespace Tests
                 description: "NonExisting",
                 minPrice: 1000,
                 maxPrice: 2000,
-                categoriesId: new short[] { category.CategoryId },
+                categoriesId: new int[] { category.CategoryId },
                 position: 1,
                 skip: 10
             );
@@ -145,7 +145,7 @@ namespace Tests
                 description: null,
                 minPrice: null,
                 maxPrice: null,
-                categoriesId: new short[] { },
+                categoriesId: new int[] { },
                 position: 1,
                 skip: 10
             );
@@ -176,7 +176,7 @@ namespace Tests
                 description: null,
                 minPrice: null,
                 maxPrice: null,
-                categoriesId: new short[] { category.CategoryId },
+                categoriesId: new int[] { category.CategoryId },
                 position: 2,
                 skip: 2
             );

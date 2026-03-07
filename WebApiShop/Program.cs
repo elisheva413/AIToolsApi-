@@ -4,7 +4,31 @@ using Repositeries;
 using Service;
 using WebApiShop.Controllers;
 using NLog.Web;
+using Entities;
+using System.Text.Json.Serialization;
+using System.Text.Json;
+
 var builder = WebApplication.CreateBuilder(args);
+
+//builder.Services.AddCors(options => {
+
+//options.AddPolicy("CorsPolicy", 
+//builder =>
+//builder.WithOrigins("http://localhost:4200", "אתר פיתוח")
+//.AllowAnyHeader()
+//.AllowAnyMethod()
+//    );
+
+
+//});
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy", policy =>
+        policy.WithOrigins("http://localhost:4200", "https://localhost:4200")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+    );
+});
 
 
 // Add services to the container.
@@ -21,7 +45,15 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 
 builder.Services.AddDbContext<Store_215962135Context>(options => options.UseSqlServer( builder.Configuration.GetConnectionString("MyWebApiShop")));
 
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        // הופך את כל השמות (כמו Items, TotalCount) לאותיות קטנות בהתחלה (items, totalCount)
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
 
+        // מתעלם מלולאות מעגליות במקום לקרוס ולשלוח תשובה ריקה
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    });
 
 
 builder.Services.AddControllers();
@@ -42,9 +74,14 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+
 // Configure the HTTP request pipeline.
 
 app.UseHttpsRedirection();
+
+app.UseRouting();
+
+app.UseCors("CorsPolicy");
 
 app.UseStaticFiles();
 

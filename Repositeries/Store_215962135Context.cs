@@ -28,9 +28,9 @@ public partial class Store_215962135Context : DbContext
     {
         modelBuilder.Entity<Category>(entity =>
         {
-            entity.HasKey(e => e.CategoryId).HasName("PK__Categori__19093A2BCA92DC65");
+            entity.HasKey(e => e.CategoryId).HasName("PK__Categori__19093A2BC1133412");
 
-            entity.HasIndex(e => e.CategoryName, "UQ__Categori__8517B2E034079CBF").IsUnique();
+            entity.HasIndex(e => e.CategoryName, "UQ__Categori__8517B2E0DD1C277D").IsUnique();
 
             entity.Property(e => e.CategoryId).HasColumnName("CategoryID");
             entity.Property(e => e.CategoryName)
@@ -41,21 +41,28 @@ public partial class Store_215962135Context : DbContext
 
         modelBuilder.Entity<Order>(entity =>
         {
-            entity.HasKey(e => e.OrderId).HasName("PK__Orders__C3905BAFAAF4A8E9");
+            entity.HasKey(e => e.OrderId).HasName("PK__Orders__C3905BAF75AC69B6");
 
             entity.Property(e => e.OrderId).HasColumnName("OrderID");
             entity.Property(e => e.OrderDate).HasDefaultValueSql("(getdate())");
+            entity.Property(e => e.OrderStatus)
+                .IsRequired()
+                .HasMaxLength(20)
+                .IsUnicode(false)
+                .HasDefaultValue("Paid")
+                .HasAnnotation("Relational:DefaultConstraintName", "DF_Orders_OrderStatus");
+            entity.Property(e => e.OrderSum).HasColumnType("decimal(10, 2)");
             entity.Property(e => e.UserId).HasColumnName("UserID");
 
             entity.HasOne(d => d.User).WithMany(p => p.Orders)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Orders__UserID__6A30C649");
+                .HasConstraintName("FK_Orders_Users");
         });
 
         modelBuilder.Entity<OrdersItem>(entity =>
         {
-            entity.HasKey(e => e.OrderItemId).HasName("PK__Orders_I__57ED06A1646A5D68");
+            entity.HasKey(e => e.OrderItemId).HasName("PK__Orders_I__57ED06A1FD33476A");
 
             entity.ToTable("Orders_Items");
 
@@ -66,27 +73,38 @@ public partial class Store_215962135Context : DbContext
             entity.HasOne(d => d.Order).WithMany(p => p.OrdersItems)
                 .HasForeignKey(d => d.OrderId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Orders_It__Order__6E01572D");
+                .HasConstraintName("FK_OrdersItems_Orders");
 
             entity.HasOne(d => d.Products).WithMany(p => p.OrdersItems)
                 .HasForeignKey(d => d.ProductsId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Orders_It__Produ__6D0D32F4");
+                .HasConstraintName("FK_OrdersItems_Products");
         });
 
         modelBuilder.Entity<Product>(entity =>
         {
-            entity.HasKey(e => e.ProductsId).HasName("PK__Products__BB48EDC59B727978");
+            entity.HasKey(e => e.ProductsId).HasName("PK__Products__BB48EDC5BEFE17E0");
 
-            entity.HasIndex(e => e.ProductsName, "UQ__Products__146C2A6DD5A87F24").IsUnique();
+            entity.HasIndex(e => e.ProductsName, "UQ__Products__146C2A6D1F70AEC3").IsUnique();
 
-            entity.HasIndex(e => e.ImgUrl, "UQ__Products__1BCAF4FC5A568776").IsUnique();
+            entity.HasIndex(e => e.ImgUrl, "UQ__Products__1BCAF4FC00CBD508").IsUnique();
 
             entity.Property(e => e.ProductsId).HasColumnName("ProductsID");
             entity.Property(e => e.CategoryId).HasColumnName("CategoryID");
+            entity.Property(e => e.Color)
+                .HasMaxLength(30)
+                .IsUnicode(false);
             entity.Property(e => e.ImgUrl)
                 .HasMaxLength(200)
                 .IsUnicode(false);
+            entity.Property(e => e.ImgUrl2)
+                .HasMaxLength(200)
+                .IsUnicode(false);
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
+            entity.Property(e => e.Material)
+                .HasMaxLength(30)
+                .IsUnicode(false);
+            entity.Property(e => e.Price).HasColumnType("decimal(10, 2)");
             entity.Property(e => e.ProductsDescreption)
                 .HasMaxLength(200)
                 .IsUnicode(false);
@@ -98,16 +116,19 @@ public partial class Store_215962135Context : DbContext
             entity.HasOne(d => d.Category).WithMany(p => p.Products)
                 .HasForeignKey(d => d.CategoryId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Products__Catego__628FA481");
+                .HasConstraintName("FK_Products_Categories");
         });
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__Users__1788CCACE07EC79B");
+            entity.HasKey(e => e.UserId).HasName("PK__Users__1788CCACCB6736AC");
 
-            entity.HasIndex(e => e.UserName, "UQ__Users__C9F28456767B5F20").IsUnique();
+            entity.HasIndex(e => e.UserName, "UQ__Users__C9F28456DF91780C").IsUnique();
 
             entity.Property(e => e.UserId).HasColumnName("UserID");
+            entity.Property(e => e.Address)
+                .HasMaxLength(200)
+                .IsUnicode(false);
             entity.Property(e => e.FirstName)
                 .HasMaxLength(100)
                 .IsUnicode(false);
@@ -117,6 +138,9 @@ public partial class Store_215962135Context : DbContext
             entity.Property(e => e.Password)
                 .IsRequired()
                 .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.Phone)
+                .HasMaxLength(20)
                 .IsUnicode(false);
             entity.Property(e => e.UserName)
                 .IsRequired()

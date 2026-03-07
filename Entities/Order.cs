@@ -7,13 +7,15 @@ namespace Entities;
 
 public partial class Order
 {
-    public short OrderId { get; set; }
+    public int OrderId { get; set; }
 
-    public DateOnly? OrderDate { get; set; }
+    public DateOnly OrderDate { get; set; }
 
-    public short OrderSum { get; set; }
+    public decimal OrderSum { get; set; }
 
-    public short UserId { get; set; }
+    public int UserId { get; set; }
+
+    public string OrderStatus { get; set; }
 
     public virtual ICollection<OrdersItem> OrdersItems { get; set; } = new List<OrdersItem>();
 

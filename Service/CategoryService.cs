@@ -4,6 +4,8 @@ using Entities;
 using Repositeries;
 
 
+
+
 namespace Service
 {
     public class CategoryService : ICategoryService
@@ -19,7 +21,9 @@ namespace Service
 
         public async Task<List<CategoryDTO>> GetCategory()
         {
-            List<Category> cayegoryList = await _categoryRepository.GetCategory();
+          List<Category> cayegoryList = await _categoryRepository.GetCategory();
+
+
             List<CategoryDTO> categoryDtos = _mapper.Map<List<Category>, List<CategoryDTO>>(cayegoryList);
             return categoryDtos;
         }

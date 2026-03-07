@@ -10,8 +10,5 @@ namespace DTOs
     (
         int CategoryId,
         string CategoryName
-    );
-   
-
-    
+    ); 
 }

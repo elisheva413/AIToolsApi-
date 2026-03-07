@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
+using DTOs;
 using Entities;
 using Repositeries;
-using DTOs;
 
 
 namespace Service
@@ -17,23 +17,31 @@ namespace Service
             _mapper = mapper;
         }
 
-        public async Task<FinalProducts> GetProducts(string? description, double? minPrice, double? maxPrice, short[]? categoriesId, int position = 1, int skip = 8)
+        public async Task<FinalProducts> GetProducts(int[]? categoryId,string? q,decimal? minPrice, decimal? maxPrice,string? color,string? material,bool? inStock,bool? isActive,string? sort,int? skip,int? position)
         {
-            (List<Product> Items, int TotalCount) products = await _productRepository.GetProducts(description, minPrice, maxPrice, categoriesId, position, skip);
-            List<ProductDTO> productsDTO = _mapper.Map<List<Product>, List<ProductDTO>>(products.Items);
-            bool hasNext = (products.TotalCount - (position * skip)) > 0;
-            bool hasPrev = position > 1;
-            FinalProducts finalProducts = new()
-            {
-                Items = productsDTO,
-                TotalCount = products.TotalCount,
-                HasNext = hasNext,
-                HasPrev = hasPrev
-            };
+            var (products, total) = await _productRepository.GetProducts(
+                categoryId, q, minPrice, maxPrice, color, material,
+                inStock, isActive, sort, skip, position);
 
+            var itemsDto = _mapper.Map<List<ProductDTO>>(products);
+
+            int pageSize = (skip.HasValue && skip.Value > 0) ? skip.Value : 12;
+            int page = (position.HasValue && position.Value > 0) ? position.Value : 1;
+
+            bool hasNext = (total - (page * pageSize)) > 0;
+            bool hasPrev = page > 1;
+
+            return new FinalProducts(itemsDto, total, hasNext, hasPrev);
         }
+        public async Task<ProductDTO?> GetProductByIdAsync(int productsId)
+        {
+            var product = await _productRepository.GetProductByIdAsync(productsId);
+            if (product == null)
+                return null;
 
-
+            var productDto = _mapper.Map<ProductDTO>(product);
+            return productDto;
+        }
 
     }
 }

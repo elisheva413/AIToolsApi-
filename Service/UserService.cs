@@ -28,7 +28,7 @@ namespace Service
         public async Task<UserDTO> GetUserById(int id)
         {
             User userByID = await _userRipository.GetUserById(id);
-            UserDTO userDtoByID= _mapper.Map< User, UserDTO>(userByID);
+            UserDTO userDtoByID = _mapper.Map<User, UserDTO>(userByID);
             return userDtoByID;
         }
 
@@ -40,18 +40,19 @@ namespace Service
             return userDTO;
         }
 
-        public async Task<UserDTO> LogIn(UserLoginDTO existingUser)
+        public async Task<UserPublicDTO?> LogIn(UserLoginDTO existingUser)
         {
-            User loginUser = _mapper.Map<UserLoginDTO, User>(existingUser);
-            User user= await _userRipository.LogIn(loginUser);
-            UserDTO userDto= _mapper.Map<User, UserDTO>(user);
-            return userDto;
+            var user = await _userRipository.LogIn(existingUser.UserName, existingUser.Password);
+            if (user == null)
+                return null;
 
+            return _mapper.Map<UserPublicDTO>(user);
         }
+
 
         public async Task UpdateUser(int id, UserDTO updateUser)
         {
-            User user=_mapper.Map <UserDTO, User>(updateUser);
+            User user = _mapper.Map<UserDTO, User>(updateUser);
             await _userRipository.UpdateUser(id, user);
         }
     }

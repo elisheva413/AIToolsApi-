@@ -54,13 +54,13 @@ namespace Tests
         public async Task GetProducts_FilterByDescriptionPriceAndCategory_ReturnsOnlyMatching()
         {
             // Arrange
-            short cat = 100;
+            int cat = 100;
 
             var products = new List<Product>
             {
-                new Product { ProductsId = 1, ProductsName="Laptop", ProductsDescreption="High performance laptop", Price=1200, CategoryId=cat, ImgUrl="1.jpg" },
-                new Product { ProductsId = 2, ProductsName="Smartphone", ProductsDescreption="Latest model smartphone", Price=800, CategoryId=cat, ImgUrl="2.jpg" },
-                new Product { ProductsId = 3, ProductsName="Headphones", ProductsDescreption="Noise cancelling headphones", Price=100, CategoryId=cat, ImgUrl="3.jpg" }
+                new Product { ProductsId = 1, ProductsName="Laptop", ProductsDescreption="High performance laptop", Price=1200m, CategoryId=cat, ImgUrl="1.jpg" },
+                new Product { ProductsId = 2, ProductsName="Smartphone", ProductsDescreption="Latest model smartphone", Price=800m, CategoryId=cat, ImgUrl="2.jpg" },
+                new Product { ProductsId = 3, ProductsName="Headphones", ProductsDescreption="Noise cancelling headphones", Price=100m, CategoryId=cat, ImgUrl="3.jpg" }
             };
 
             var repo = CreateRepo(products);
@@ -70,7 +70,7 @@ namespace Tests
                 description: "smart",
                 minPrice: 50,
                 maxPrice: 1000,
-                categoriesId: new short[] { cat },
+                categoriesId: new int[] { cat },
                 position: 1,
                 skip: 8
             );
@@ -98,7 +98,7 @@ namespace Tests
                 description: "NonExisting",
                 minPrice: 1000,
                 maxPrice: 2000,
-                categoriesId: new short[] { 105 },
+                categoriesId: new int[] { 105 },
                 position: 1,
                 skip: 8
             );
@@ -126,7 +126,7 @@ namespace Tests
                 description: null,
                 minPrice: null,
                 maxPrice: null,
-                categoriesId: new short[] { },   
+                categoriesId: new int[] { },   
                 position: 1,
                 skip: 8
             );
@@ -140,13 +140,13 @@ namespace Tests
         public async Task GetProducts_Pagination_ReturnsCorrectPage()
         {
             // Arrange
-            short cat = 100;
+            int cat = 100;
 
             var products = new List<Product>
             {
-                new Product { ProductsId = 1, ProductsName="A", ProductsDescreption="d", Price=10, CategoryId=cat, ImgUrl="1.jpg" },
+                new Product { ProductsId = 1, ProductsName="A", ProductsDescreption="d", Price=10m, CategoryId=cat, ImgUrl="1.jpg" },
                 new Product { ProductsId = 2, ProductsName="B", ProductsDescreption="d", Price=20, CategoryId=cat, ImgUrl="2.jpg" },
-                new Product { ProductsId = 3, ProductsName="C", ProductsDescreption="d", Price=30, CategoryId=cat, ImgUrl="3.jpg" }
+                new Product { ProductsId = 3, ProductsName="C", ProductsDescreption="d", Price=30m, CategoryId=cat, ImgUrl="3.jpg" }
             };
 
             var repo = CreateRepo(products);
@@ -156,7 +156,7 @@ namespace Tests
                 description: null,
                 minPrice: null,
                 maxPrice: null,
-                categoriesId: new short[] { cat },
+                categoriesId: new int[] { cat },
                 position: 2,
                 skip: 2
             );

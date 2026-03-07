@@ -7,13 +7,14 @@ using System.Threading.Tasks;
 namespace DTOs
 {
     public record OrderDTO
-     (
-      int OrderId,
-      DateOnly? OrderDate,
-      int OrderSum,
-      int UserId,
-      string UserFirstName,
-      string UserLastName
-     );
+    (
+        int OrderId,
+        DateOnly? OrderDate,
+        decimal OrderSum,
+        int UserId,
+        string OrderStatus
+    );
+   
+
     
 }
