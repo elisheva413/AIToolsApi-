@@ -32,16 +32,21 @@ builder.Services.AddCors(options =>
 
 
 // Add services to the container.
-builder.Services.AddScoped<IUserRipository, UserRipository>();
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserPasswordRipository, UserPasswordRipository>();
 builder.Services.AddScoped<IUserPasswordService, UserPasswordService>();
-builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddAutoMapper(typeof(Service.AutoMappering));
+
+
 
 builder.Services.AddDbContext<Store_215962135Context>(options => options.UseSqlServer( builder.Configuration.GetConnectionString("MyWebApiShop")));
 

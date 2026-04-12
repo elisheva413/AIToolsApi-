@@ -1,0 +1,36 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Threading.Tasks;
+using DTOs;
+using Service;
+
+namespace WebApiShop.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class EmailController : ControllerBase
+    {
+        private readonly IEmailService _emailService;
+
+        // הזרקת תלויות (Dependency Injection)
+        public EmailController(IEmailService emailService)
+        {
+            _emailService = emailService;
+        }
+
+        [HttpPost("send-giftcard")]
+        public async Task<IActionResult> SendGiftCardEmail([FromBody] GiftCardEmailRequest request)
+        {
+            try
+            {
+                // הקריאה עוברת ל-Service
+                await _emailService.SendGiftCardEmailAsync(request);
+                return Ok(new { message = "המייל נשלח בהצלחה!" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = "שגיאה בשליחת המייל", error = ex.Message });
+            }
+        }
+    }
+}

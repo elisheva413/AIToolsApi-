@@ -1,16 +1,16 @@
-﻿using Repositeries;
-using Entities;
+﻿using Entities;
 using DTOs;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Service
 {
     public interface IUserService
     {
-        Task<List<UserDTO>> GetUsers();
-        Task<UserDTO> GetUserById(int id);
-        Task<UserDTO> AddUser(UserRegisterDTO user);
-        Task<UserPublicDTO?> LogIn(UserLoginDTO exestingUser);
-        Task UpdateUser(int id, UserDTO updateUser);
-       
+        Task<User> addUserServices(User user);
+        Task<UserDTO> GetById(int id);
+        Task<IEnumerable<UserDTO>> GetUsers();
+        Task<User> loginServices(User user);
+        Task update(UserDTO userDto, int id);
     }
 }

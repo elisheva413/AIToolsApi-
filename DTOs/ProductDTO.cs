@@ -12,11 +12,15 @@ namespace DTOs
             int CategoryId,
             string ProductsName,
             string ProductsDescreption,
-            double Price,
+            decimal Price,
             string ImgUrl,
             string ImgUrl2,
 			string Color,
-            string Material
+            string Material,
+            int Quantity,
+            bool IsActive
+
+
     );
   
 }

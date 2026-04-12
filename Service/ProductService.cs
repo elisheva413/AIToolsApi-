@@ -17,7 +17,7 @@ namespace Service
             _mapper = mapper;
         }
 
-        public async Task<FinalProducts> GetProducts(int[]? categoryId,string? q,decimal? minPrice, decimal? maxPrice,string? color,string? material,bool? inStock,bool? isActive,string? sort,int? skip,int? position)
+        public async Task<FinalProducts> GetProducts(int[]? categoryId, string? q, decimal? minPrice, decimal? maxPrice, string? color, string? material, bool? inStock, bool? isActive, string? sort, int? skip, int? position)
         {
             var (products, total) = await _productRepository.GetProducts(
                 categoryId, q, minPrice, maxPrice, color, material,
@@ -42,6 +42,25 @@ namespace Service
             var productDto = _mapper.Map<ProductDTO>(product);
             return productDto;
         }
+
+        public async Task<Product> AddProduct(Product product)
+        {
+            return await _productRepository.AddProduct(product);
+        }
+
+        public async Task<Product> UpdateProduct(int id, Product product)
+        {
+            return await _productRepository.UpdateProduct(id, product);
+        }
+
+        public async Task DeleteProduct(int id)
+        {
+            await _productRepository.DeleteProduct(id);
+        }
+        //public async Task<bool> SoftDeleteProduct(int id)
+        //{
+        //    return await _productRepository.SoftDeleteProduct(id);
+        //}
 
     }
 }

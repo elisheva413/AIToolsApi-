@@ -126,6 +126,9 @@ public partial class Store_215962135Context : DbContext
             entity.HasIndex(e => e.UserName, "UQ__Users__C9F28456DF91780C").IsUnique();
 
             entity.Property(e => e.UserId).HasColumnName("UserID");
+
+            entity.Property(e => e.Role)
+             .HasMaxLength(50);
             entity.Property(e => e.Address)
                 .HasMaxLength(200)
                 .IsUnicode(false);

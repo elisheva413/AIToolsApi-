@@ -4,8 +4,14 @@ using Repositeries;
 namespace Service
 
 {
+    //public interface IUserPasswordService
+    //{
+    //    //int CheckPassword(string password);
+    //}
+
     public interface IUserPasswordService
     {
-        int CheckPassword(string password);
+        UserPassword Level(string pass);
+        bool UpdatePassword(int userId, string newPassword);
     }
 }

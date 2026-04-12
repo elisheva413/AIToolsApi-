@@ -4,6 +4,6 @@ namespace Repositeries
 {
     public interface IUserPasswordRipository
     {
-        int CheckPassword(UserPassword password);
+        //int CheckPassword(UserPassword password);
     }
 }

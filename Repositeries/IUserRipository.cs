@@ -1,16 +1,16 @@
-﻿
-using Entities;
-
+﻿using Entities;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Repositeries
 {
-    public interface IUserRipository
+    public interface IUserRepository
     {
         Task<User> AddUser(User user);
-        Task<User> GetUserById(int id);
-        Task<List<User>> GetUsers();
-        Task<User?> LogIn(string userName, string password);
-        Task UpdateUser(int id, User updateUser);
+        Task<User> GetById(int id);
+        Task<IEnumerable<User>> GetUsers();
+        Task<User> Login(User user);
+        Task<ActionResult<User>> Put(int id, User user);
     }
 }
-
