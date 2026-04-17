@@ -19,8 +19,6 @@ namespace DTOs
             string Material,
             int Quantity,
             bool IsActive
-
-
     );
   
 }

@@ -12,7 +12,6 @@ namespace WebApiShop.Controllers
     {
         private readonly IEmailService _emailService;
 
-        // הזרקת תלויות (Dependency Injection)
         public EmailController(IEmailService emailService)
         {
             _emailService = emailService;
@@ -23,7 +22,6 @@ namespace WebApiShop.Controllers
         {
             try
             {
-                // הקריאה עוברת ל-Service
                 await _emailService.SendGiftCardEmailAsync(request);
                 return Ok(new { message = "המייל נשלח בהצלחה!" });
             }

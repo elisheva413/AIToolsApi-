@@ -37,7 +37,6 @@ namespace Service
 {
     public class UserPasswordService : IUserPasswordService
     {
-        // שימרתי את ההזרקה שלך למקרה שתצטרכי את ה-Repository בהמשך
         private readonly IUserPasswordRipository _userPasswordRipo;
 
         public UserPasswordService(IUserPasswordRipository userPassword)
@@ -45,7 +44,6 @@ namespace Service
             _userPasswordRipo = userPassword;
         }
 
-        // לוגיקה זהה לחברה שלך - החזרת אובייקט Entity עם הציון
         public UserPassword Level(string pass)
         {
             var result = Zxcvbn.Core.EvaluatePassword(pass);
@@ -60,7 +58,6 @@ namespace Service
 
         private const int MIN_REQUIRED_STRENGTH = 3;
 
-        // הוספת פונקציית העדכון והבדיקה בדיוק כמו אצלה
         public bool UpdatePassword(int userId, string newPassword)
         {
             var strengthResult = Level(newPassword);

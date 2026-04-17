@@ -14,7 +14,6 @@ namespace Tests.TestRepository.UnitTest
         [Fact]
         public async Task GetCategory_ReturnsListOfCategories()
         {
-            //var mockContext = new Mock<Store_215962135Context>();
             var mockContext = new Mock<Store_215962135Context>(new DbContextOptions<Store_215962135Context>());
 
             var categories = new List<Category>

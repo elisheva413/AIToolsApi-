@@ -21,13 +21,6 @@ namespace Repositeries
             return await _store_215962135Context.Orders.FindAsync(id);
         }
 
-        //public async Task<Order> AddOrder(Order order)
-        //{
-        //    await _store_215962135Context.Orders.AddAsync(order);
-        //    await _store_215962135Context.SaveChangesAsync();
-        //    return order;
-
-        //}
         public async Task<Order> AddOrder(Order order)
         {
             using (var transaction = await _store_215962135Context.Database.BeginTransactionAsync())

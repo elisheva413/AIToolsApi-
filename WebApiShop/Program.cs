@@ -7,6 +7,7 @@ using NLog.Web;
 using Entities;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using WebApiShop.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,24 +45,20 @@ builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IRatingRepository, RatingRepository>();
+builder.Services.AddScoped<IRatingService, RatingService>();
 builder.Services.AddAutoMapper(typeof(Service.AutoMappering));
-
-
 
 builder.Services.AddDbContext<Store_215962135Context>(options => options.UseSqlServer( builder.Configuration.GetConnectionString("MyWebApiShop")));
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        // הופך את כל השמות (כמו Items, TotalCount) לאותיות קטנות בהתחלה (items, totalCount)
         options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-
-        // מתעלם מלולאות מעגליות במקום לקרוס ולשלוח תשובה ריקה
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     });
 
 
-builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Host.UseNLog();
@@ -79,8 +76,10 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-
 // Configure the HTTP request pipeline.
+app.UseErrorHandlingMiddleware();
+
+app.UseRatingMiddleware();
 
 app.UseHttpsRedirection();
 

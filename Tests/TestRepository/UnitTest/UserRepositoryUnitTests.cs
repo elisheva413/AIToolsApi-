@@ -55,7 +55,6 @@ namespace Tests.TestRepository.UnitTest
 
             var repository = new UserRepository(mockContext.Object);
 
-            // We create a User object to pass to the Login method, matching your exact signature
             var userToLogin = new User { UserName = "login@test.com", Password = "123" };
 
             // Act

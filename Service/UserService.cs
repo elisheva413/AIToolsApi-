@@ -127,19 +127,10 @@ namespace Service
             return await _IuserRepository.Login(user);
         }
 
-        //public async Task update(UserDTO userDto, int id)
-        //{
-        //    User user = _imapper.Map<User>(userDto);
-        //    await _IuserRepository.Put(id, user);
-        //}
-        //GEMINI:
-        // UserService.cs
+     
         public async Task update(UserDTO userDto, int id)
         {
-            // המיפוי יוצר אובייקט User חדש עם הנתונים מה-DTO
             User user = _imapper.Map<User>(userDto);
-
-            // קריאה ל-Repository שמעכשיו באמת שומר
             await _IuserRepository.Put(id, user);
         }
     }

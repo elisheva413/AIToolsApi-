@@ -71,7 +71,7 @@ namespace WebApiShop.Controllers
     [ApiController]
     public class PasswordsController : ControllerBase
     {
-        IUserPasswordService _passwordservice;//
+        IUserPasswordService _passwordservice;
 
         public PasswordsController(IUserPasswordService passwordservice)
         {

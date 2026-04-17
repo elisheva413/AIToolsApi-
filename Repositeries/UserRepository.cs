@@ -61,14 +61,14 @@
 
 //    }
 //}
-using Entities; // שיניתי מ-Entity ל-Entities לפי ה-Namespace ששלחת קודם
+using Entities; 
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-namespace Repositeries // השם של ה-Namespace שלך
+namespace Repositeries 
 {
     public class UserRepository : IUserRepository
     {
@@ -93,7 +93,7 @@ namespace Repositeries // השם של ה-Namespace שלך
         {
             await _store_215962135Context.Users.AddAsync(user);
 
-            // לוגיקת ברירת מחדל לתפקיד כפי שמופיע אצל חברתך
+          
             if (string.IsNullOrEmpty(user.Role))
             {
                 user.Role = "User";
@@ -129,7 +129,6 @@ namespace Repositeries // השם של ה-Namespace שלך
 
             if (existingUser != null)
             {
-                // עדכון השדות
                 existingUser.FirstName = updatedUser.FirstName;
                 existingUser.LastName = updatedUser.LastName;
                 existingUser.Phone = updatedUser.Phone;
@@ -137,7 +136,6 @@ namespace Repositeries // השם של ה-Namespace שלך
                 existingUser.UserName = updatedUser.UserName;
                 existingUser.Password = updatedUser.Password;
 
-                // הודעה מפורשת ל-EF שהאובייקט השתנה
                 _store_215962135Context.Users.Update(existingUser);
                 await _store_215962135Context.SaveChangesAsync();
             }

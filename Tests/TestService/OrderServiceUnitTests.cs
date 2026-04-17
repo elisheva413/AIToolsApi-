@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
+using Microsoft.Extensions.Logging;
 
 namespace Tests
 {
@@ -17,13 +18,15 @@ namespace Tests
         private readonly Mock<IProductService> _productServiceMock;
         private readonly Mock<IMapper> _mapperMock;
         private readonly OrderService _orderService;
+        private readonly Mock<ILogger<OrderService>> _loggerMock;
 
         public OrderServiceUnitTests()
         {
             _orderRepoMock = new Mock<IOrderRepository>();
             _productServiceMock = new Mock<IProductService>();
             _mapperMock = new Mock<IMapper>();
-            _orderService = new OrderService(_orderRepoMock.Object, _productServiceMock.Object, _mapperMock.Object);
+            _loggerMock = new Mock<ILogger<OrderService>>();
+            _orderService = new OrderService(_orderRepoMock.Object, _productServiceMock.Object, _mapperMock.Object, _loggerMock.Object);
         }
 
         [Fact]

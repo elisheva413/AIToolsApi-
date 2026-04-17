@@ -15,12 +15,11 @@ namespace Service
     {
         public async Task SendGiftCardEmailAsync(GiftCardEmailRequest request)
         {
-            // 1. הגדרת כתובת השולח והנמען
             var fromAddress = new MailAddress("eli7p654321@gmail.com", "Pandora Gift-Card");
             var toAddress = new MailAddress(request.RecipientEmail, request.RecipientName);
 
-            const string fromPassword = "acqk bwyx cbvj spwi";
-            //ylrv dnkw jxzo mnfp
+            const string fromPassword = "XXXXX";
+           
 
             string subject = $"הפתעה! מתנה מ{request.SenderName} מחכה לך בפנדורה 🎁";
 
@@ -74,7 +73,6 @@ namespace Service
     </div>
 </div>";
 
-            // 4. הגדרת שרת ה-SMTP של גוגל
             using var smtp = new SmtpClient
             {
                 Host = "smtp.gmail.com",
@@ -85,7 +83,6 @@ namespace Service
                 Credentials = new NetworkCredential(fromAddress.Address, fromPassword)
             };
 
-            // 5. בניית ההודעה ושליחתה (כעת באופן אסינכרוני)
             using var message = new MailMessage(fromAddress, toAddress)
             {
                 Subject = subject,

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DTOs;
 using Entities;
+using Microsoft.Extensions.Logging;
 using Repositeries;
 
 
@@ -12,12 +13,14 @@ namespace Service
         private readonly IOrderRepository _orderRepository;
         private readonly IProductService _productService;
         IMapper _mapper;
+        private readonly ILogger<OrderService> _logger;
 
-        public OrderService(IOrderRepository orderRepository, IProductService productService, IMapper mapper)
+        public OrderService(IOrderRepository orderRepository, IProductService productService, IMapper mapper,ILogger<OrderService>logger)
         {
             _orderRepository = orderRepository;
             _productService = productService;
             _mapper = mapper;
+            _logger = logger;
         }
 
         public async Task<OrderDTO?> GetOrderById(int id)
@@ -29,13 +32,6 @@ namespace Service
             return _mapper.Map<OrderDTO>(order);
         }
 
-
-        //public async Task<OrderDTO> AddOrder(Order order)
-        //{
-        //    Order newOrder = await _orderRepository.AddOrder(order);
-        //    var fullOrder = await _orderRepository.GetOrderById(newOrder.OrderId);
-        //    return _mapper.Map<Order, OrderDTO>(fullOrder);
-        //}
         public async Task<OrderDTO> AddOrder(Order order)
         {
             decimal totalSum = 0;
@@ -50,11 +46,13 @@ namespace Service
 
             if (order.OrderSum != totalSum)
             {
+                _logger.LogWarning($"Security Warning: UserID {order.UserId} attempted to change order sum. Expted {totalSum}, but got {order.OrderSum}");
                 throw new Exception("Payment error");
             }
 
             Order newOrder = await _orderRepository.AddOrder(order);
             var fullOrder = await _orderRepository.GetOrderById(newOrder.OrderId);
+            _logger.LogInformation($"Order {newOrder.OrderId} created successfully for UserID {newOrder.UserId} with total sum {totalSum}");
             return _mapper.Map<Order, OrderDTO>(fullOrder);
         }
 
