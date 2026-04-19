@@ -1,55 +1,67 @@
-# 💍 WebApiShop - מערכת חנות תכשיטים (REST API)
+# 💍 WebApiShop - Jewelry Store System (REST API)
 
-מערכת Backend מתקדמת לניהול חנות תכשיטים וירטואלית, ממומשת כ-REST API מודרני באמצעות **ASP.NET Core 9** ו-**C#**.
-המערכת נבנתה תוך הקפדה על עקרונות ה-REST, ביצועים גבוהים (High Performance), סקילביליות (Scalability) והפרדה מוחלטת בין השכבות (Decoupling).
+An advanced Backend system for managing a virtual jewelry store, implemented as a modern **REST API** using **ASP.NET Core 9** and **C#**.
+The system was built with a focus on REST principles, high performance, scalability, and a clear separation of layers (Decoupling).
 
-## 🏗 ארכיטקטורה ומבנה הפרויקט
+## 🏗 Architecture and Project Structure
 
-הפרויקט בנוי ב**ארכיטקטורת 3 שכבות (N-Tier Architecture)**, המאפשרת תחזוקה קלה, קוד נקי, ובדיקות איכותיות:
+The project is built using a **3-layer (N-Tier Architecture)**, which ensures easy maintenance, clean code, and effective testing:
 
-1. **שכבת Application (Web API):**
-   * ניהול הבקשות (Controllers) והגדרות ה-Routing.
-   * מימוש Middlewares מותאמים אישית (שגיאות, מעקב).
-   * הגדרת Dependency Injection (DI) בצורה מרוכזת.
+1. **Application Layer (Web API):**
 
-2. **שכבת Services (לוגיקה עסקית):**
-   * מתווכת בין ה-Controllers ל-Repositories.
-   * מכילה את כל הלוגיקה העסקית של חנות התכשיטים (למשל, בדיקת תקינות מחיר הזמנה).
-   * הפעולות מבוצעות בצורה **אסינכרונית** לשחרור משאבי שרת (Threads).
+   * Manages requests (Controllers) and defines Routing configurations.
+   * Implements custom Middlewares (errors, tracking).
+   * Centralized Dependency Injection (DI) setup.
 
-3. **שכבת Repositories (גישה לנתונים):**
-   * גישה למסד הנתונים באמצעות Entity Framework Core.
-   * עבודה בגישת **Database First**.
-   * שליפות ועדכונים מבוצעים באופן אסינכרוני לשיפור ביצועים ויכולת Scale.
+2. **Services Layer (Business Logic):**
 
-## 🛠 טכנולוגיות ודגשים עיקריים
+   * Acts as an intermediary between Controllers and Repositories.
+   * Contains all the business logic of the jewelry store (e.g., validating order price).
+   * Operations are performed **asynchronously** to free up server resources (Threads).
 
-### ⚡ ביצועים וניתוק תלויות
-* **תכנות אסינכרוני:** שימוש ב-`async/await` לכל אורך הפרויקט לשחרור ה-Thread ושיפור ה-Scalability.
-* **Dependency Injection:** הזרקת תלויות בין השכבות השונות ליצירת Decoupling (ניתוק) מלא בין הממשקים למימושים.
+3. **Repositories Layer (Data Access):**
 
-### 🔄 העברת נתונים ומיפוי (DTOs)
-* **DTO (Data Transfer Object):** שימוש בשכבת DTO ייעודית על מנת להסיר תלות מעגלית (Circular Dependency) ולמנוע חשיפת ישויות מסד הנתונים החוצה (ללא שימוש ב-`[JsonIgnore]`).
-* **C# Records:** אובייקטי ה-DTO ממומשים כ-`record`, אידיאלי להעברת נתונים (Immutable Data).
-* **AutoMapper:** שימוש בספריית AutoMapper למיפוי אוטומטי, נקי ויעיל בין ה-Entities ל-DTOs.
+   * Database access through Entity Framework Core.
+   * Works with **Database First** approach.
+   * Data retrievals and updates are done asynchronously for performance improvement and scalability.
 
-### 📊 ניטור, לוגים וניהול שגיאות
-* **NLog:** שילוב מערכת לוגים מתקדמת השומרת מידע (Information ומעלה) לקבצים ייעודיים.
-* **Error Handling Middleware:** טיפול גלובלי ואחיד בשגיאות לצרכי ניטור ומניעת קריסת השרת.
-* **Rating Middleware:** כל תעבורת המערכת והבקשות מתועדות ונשמרות בטבלת `Rating` ייעודית למעקב וסטטיסטיקה.
-* **Configuration:** כל הגדרות המערכת (כמו מחרוזות התחברות - Connection Strings) נשמרות בנפרד מהקוד בקובץ `appsettings.json`.
-* **אבטחה:** המערכת פועלת תחת פרוטוקול HTTPS.
+## 🛠 Technologies and Key Highlights
 
-## 🧪 בדיקות (Testing)
-בפרויקט הושם דגש רב על איכות הקוד ואמינותו, עם כיסוי נרחב של בדיקות אוטומטיות (מעל ל-12 טסטים):
-* **Unit Tests (בדיקות יחידה):** בדיקות מבודדות לשכבת ה-Services (למשל `OrderServiceUnitTests`) ולשכבת ה-Repositories. כולל בדיקות מקיפות ללוגיקת סכום הזמנה (Happy Path ו-Unhappy Path).
-* **Integration Tests (בדיקות אינטגרציה):** חבילת בדיקות מלאה לכל ה-Repositories (`Category`, `Order`, `Product`, `User`) לבדיקת תקינות התקשורת מול מסד הנתונים.
-* **Database Fixture:** שימוש בתשתית מתקדמת לשיתוף חיבורי Database בין הטסטים.
+### ⚡ Performance and Dependency Decoupling
 
-## 📂 מבנה התיקיות ב-Solution
+* **Asynchronous Programming:** Uses `async/await` throughout the project to release Threads and improve Scalability.
+* **Dependency Injection:** Injects dependencies between layers to create full decoupling between interfaces and implementations.
+
+### 🔄 Data Transfer and Mapping (DTOs)
+
+* **DTO (Data Transfer Object):** A dedicated DTO layer to avoid circular dependencies and prevent exposing database entities externally (without using `[JsonIgnore]`).
+* **C# Records:** DTO objects are implemented as `records`, ideal for transferring immutable data.
+* **AutoMapper:** Uses the AutoMapper library for clean and efficient automatic mapping between Entities and DTOs.
+
+### 📊 Monitoring, Logs, and Error Handling
+
+* **NLog:** Advanced logging system that stores information (Information and above) in dedicated log files.
+* **Error Handling Middleware:** Global and uniform error handling for monitoring and preventing server crashes.
+* **Rating Middleware:** All system traffic and requests are logged and stored in a dedicated `Rating` table for tracking and statistics.
+* **Configuration:** All system settings (e.g., connection strings) are stored separately from the code in the `appsettings.json` file.
+* **Security:** The system operates under the HTTPS protocol.
+
+## 🧪 Testing
+
+The project places a strong emphasis on code quality and reliability, with extensive automated testing coverage (over 12 tests):
+
+* **Unit Tests:** Isolated tests for the Services layer (e.g., `OrderServiceUnitTests`) and the Repositories layer. Includes comprehensive tests for order sum logic (Happy Path and Unhappy Path).
+* **Integration Tests:** Full test suite for all Repositories (`Category`, `Order`, `Product`, `User`) to verify communication with the database.
+* **Database Fixture:** Uses an advanced infrastructure to share database connections between tests.
+
+## 📂 Folder Structure in Solution
 
 ```text
 ├── WebApiShop (Application) # Controllers, Middlewares, AppSettings
 ├── Services                 # Business Logic, AutoMapper Profiles, DTOs (Records)
-├── Repositeries             # DB Context, Entities (EF), Repository Implementations
+├── Repositories             # DB Context, Entities (EF), Repository Implementations
 └── Tests                    # Unit Tests, Integration Tests, Database Fixture
+```
+
+---
+
