@@ -11,17 +11,6 @@ using WebApiShop.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
-//builder.Services.AddCors(options => {
-
-//options.AddPolicy("CorsPolicy", 
-//builder =>
-//builder.WithOrigins("http://localhost:4200", "אתר פיתוח")
-//.AllowAnyHeader()
-//.AllowAnyMethod()
-//    );
-
-
-//});
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("CorsPolicy", policy =>
@@ -30,9 +19,6 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod()
     );
 });
-
-
-// Add services to the container.
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -47,6 +33,7 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IRatingRepository, RatingRepository>();
 builder.Services.AddScoped<IRatingService, RatingService>();
+
 builder.Services.AddAutoMapper(typeof(Service.AutoMappering));
 
 builder.Services.AddDbContext<Store_215962135Context>(options => options.UseSqlServer( builder.Configuration.GetConnectionString("MyWebApiShop")));
@@ -76,7 +63,6 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-// Configure the HTTP request pipeline.
 app.UseErrorHandlingMiddleware();
 
 app.UseRatingMiddleware();

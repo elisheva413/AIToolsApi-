@@ -102,27 +102,6 @@ namespace Repositeries
             await _store_215962135Context.SaveChangesAsync();
             return user;
         }
-
-        //public async Task<ActionResult<User>> Put(int id, [FromBody] User updatedUser)
-        //{
-        //    var existingUser = await _store_215962135Context.Users.FindAsync(id);
-
-        //    if (existingUser != null)
-        //    {
-        //        existingUser.FirstName = updatedUser.FirstName;
-        //        existingUser.LastName = updatedUser.LastName;
-        //        existingUser.Phone = updatedUser.Phone;
-        //        existingUser.Address = updatedUser.Address;
-        //        existingUser.UserName = updatedUser.UserName; // שדה שקיים אצלך
-        //        existingUser.Password = updatedUser.Password; // שדה שקיים אצלך
-
-        //        await _store_215962135Context.SaveChangesAsync();
-        //    }
-
-        //    return existingUser;
-        //}
-        //GEMINI:
-        // UserRepository.cs
         public async Task<ActionResult<User>> Put(int id, [FromBody] User updatedUser)
         {
             var existingUser = await _store_215962135Context.Users.FindAsync(id);

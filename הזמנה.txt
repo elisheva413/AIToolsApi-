@@ -1,0 +1,18 @@
+{
+  "orderId": 0,
+  "orderDate": "2026-04-16",
+  "orderSum": 190,
+  "userId": 1,
+  "orderStatus": "Pending",
+  "ordersItems": [
+    {
+      "orderItemId": 0,
+      "productsId": 1,
+      "orderId": 0,
+      "quantity": 1,
+      "order": null,
+      "products": null
+    }
+  ],
+  "user": null
+}
