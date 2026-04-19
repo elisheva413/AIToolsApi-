@@ -47,7 +47,7 @@ namespace Service
             if (order.OrderSum != totalSum)
             {
                 _logger.LogWarning($"Security Warning: UserID {order.UserId} attempted to change order sum. Expted {totalSum}, but got {order.OrderSum}");
-                throw new Exception("Payment error");
+                return null;
             }
 
             Order newOrder = await _orderRepository.AddOrder(order);

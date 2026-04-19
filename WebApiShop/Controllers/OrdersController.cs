@@ -19,8 +19,6 @@ namespace WebApiShop.Controllers
         }
 
         [HttpGet]
-
-        [HttpGet("all")]
         public async Task<ActionResult<IEnumerable<OrderDTO>>> GetAllOrders()
         {
             var orders = await _orderService.GetAllOrders();
@@ -34,25 +32,13 @@ namespace WebApiShop.Controllers
             return order == null ? NotFound() : Ok(order);
         }
 
-        //[HttpPost]
-        //public async Task<ActionResult<OrderDTO>> AddOrder([FromBody] Order order)
-        //{
-        //    OrderDTO _orderdto = await _orderService.AddOrder(order);
-
-        //    if (_orderdto == null)
-        //    {
-        //        return BadRequest();
-        //    }
-
-        //    return CreatedAtAction(nameof(Get), new { Id = order.OrderId }, order);
-        //}
         [HttpPost]
         public async Task<ActionResult<OrderDTO>> AddOrder([FromBody] Order order)
         {
             OrderDTO _orderdto = await _orderService.AddOrder(order);
             if (_orderdto == null)
             {
-                return BadRequest();
+                return BadRequest("Payment Error: Order sum mismatch.");
             }
             return CreatedAtAction(nameof(Get), new { id = _orderdto.OrderId }, _orderdto);
         }

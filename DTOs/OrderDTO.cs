@@ -14,7 +14,6 @@ namespace DTOs
         public int UserId { get; init; }
         public string OrderStatus { get; init; }
         public List<OrderItemDTO> OrdersItems { get; init; }
-
         public OrderDTO() { }
     }
 }
