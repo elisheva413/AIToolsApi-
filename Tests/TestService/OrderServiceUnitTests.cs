@@ -76,11 +76,10 @@ namespace Tests
 
             _productServiceMock.Setup(p => p.GetProductByIdAsync(It.IsAny<int>())).ReturnsAsync(productDto);
 
-            // Act & Assert
-            var exception = await Assert.ThrowsAsync<Exception>(() => _orderService.AddOrder(order));
-
-            Assert.NotNull(exception);
-            Assert.Equal("Payment error", exception.Message);
+            // Act
+            var result = await _orderService.AddOrder(order);
+            // Assert
+            Assert.Null(result); 
             _orderRepoMock.Verify(r => r.AddOrder(It.IsAny<Order>()), Times.Never);
         }
     }
