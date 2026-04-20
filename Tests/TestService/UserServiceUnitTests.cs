@@ -2,11 +2,9 @@
 using DTOs;
 using Entities;
 using Moq;
-using Org.BouncyCastle.Crypto;
 using Repositeries;
 using Service;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -28,74 +26,35 @@ namespace Tests
         }
 
         [Fact]
-        public async Task AddUserServices_DuplicateUserName_ReturnsNull()
+        public async Task AddUserServices_ValidUser_ReturnsMappedUserPublicDTO()
         {
             // Arrange
-            var newUser = new User { UserName = "existing@test.com", Password = "StrongPassword123" };
-            var existingUsersList = new List<User>
-            {
-                new User { UserName = "existing@test.com" }
-            };
+            var newUserDto = new UserRegisterDTO("new@test.com", "StrongPassword123", "First", "Last", "Phone", "Address");
+            var mappedUser = new User { UserName = "new@test.com", Password = "StrongPassword123" };
+            var returnedDto = new UserPublicDTO("new@test.com", "First", "Last", 1, "Phone", "Address", "Role");
 
-            _userRepoMock.Setup(repo => repo.GetUsers()).ReturnsAsync(existingUsersList);
-
-            // Act
-            var result = await _userService.addUserServices(newUser);
-
-            // Assert
-            Assert.Null(result);
-            _userRepoMock.Verify(repo => repo.AddUser(It.IsAny<User>()), Times.Never);
-        }
-
-        [Fact]
-        public async Task AddUserServices_WeakPassword_ReturnsNull()
-        {
-            // Arrange
-            var newUser = new User { UserName = "new@test.com", Password = "123" };
-            var emptyUsersList = new List<User>(); // No duplicates
-
-            _userRepoMock.Setup(repo => repo.GetUsers()).ReturnsAsync(emptyUsersList);
-            _passServiceMock.Setup(pass => pass.Level(newUser.Password))
-                            .Returns(new UserPassword { Strength = 1 });
+            _mapperMock.Setup(m => m.Map<UserRegisterDTO, User>(It.IsAny<UserRegisterDTO>())).Returns(mappedUser);
+            _userRepoMock.Setup(repo => repo.AddUser(It.IsAny<User>())).ReturnsAsync(mappedUser);
+            _mapperMock.Setup(m => m.Map<User, UserPublicDTO>(It.IsAny<User>())).Returns(returnedDto);
 
             // Act
-            var result = await _userService.addUserServices(newUser);
-
-            // Assert
-            Assert.Null(result);
-            _userRepoMock.Verify(repo => repo.AddUser(It.IsAny<User>()), Times.Never);
-        }
-
-        [Fact]
-        public async Task AddUserServices_ValidUserAndStrongPassword_ReturnsUser()
-        {
-            // Arrange
-            var newUser = new User { UserName = "new@test.com", Password = "StrongPassword123" };
-            var emptyUsersList = new List<User>(); // No duplicates
-
-            _userRepoMock.Setup(repo => repo.GetUsers()).ReturnsAsync(emptyUsersList);
-            _passServiceMock.Setup(pass => pass.Level(newUser.Password))
-                            .Returns(new UserPassword { Strength = 3 }); // Score >= 2
-            _userRepoMock.Setup(repo => repo.AddUser(newUser)).ReturnsAsync(newUser);
-
-            // Act
-            var result = await _userService.addUserServices(newUser);
+            var result = await _userService.addUserServices(newUserDto);
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(newUser.UserName, result.UserName);
-            _userRepoMock.Verify(repo => repo.AddUser(newUser), Times.Once);
+            Assert.Equal(returnedDto.UserName, result.UserName);
+            _userRepoMock.Verify(repo => repo.AddUser(mappedUser), Times.Once);
         }
 
         [Fact]
-        public async Task GetUsers_ReturnsMappedUserDTOs()
+        public async Task GetUsers_ReturnsMappedUserPublicDTOs()
         {
             // Arrange
             var users = new List<User> { new User { UserId = 1, UserName = "test1" } };
-            var userDtos = new List<UserDTO> { new UserDTO { UserID = 1, UserName = "test1" } };
+            var userDtos = new List<UserPublicDTO> { new UserPublicDTO("test1", "First", "Last", 1, "Phone", "Address", "Role") };
 
             _userRepoMock.Setup(repo => repo.GetUsers()).ReturnsAsync(users);
-            _mapperMock.Setup(m => m.Map<IEnumerable<User>, IEnumerable<UserDTO>>(users)).Returns(userDtos);
+            _mapperMock.Setup(m => m.Map<IEnumerable<User>, IEnumerable<UserPublicDTO>>(users)).Returns(userDtos);
 
             // Act
             var result = await _userService.GetUsers();
@@ -107,36 +66,72 @@ namespace Tests
         }
 
         [Fact]
-        public async Task GetById_ReturnsMappedUserDTO()
+        public async Task GetById_ReturnsMappedUserPublicDTO()
         {
             // Arrange
             var user = new User { UserId = 5 };
-            var userDto = new UserDTO { UserID = 5 };
+            var userDto = new UserPublicDTO("test", "First", "Last", 5, "Phone", "Address", "Role");
 
             _userRepoMock.Setup(repo => repo.GetById(5)).ReturnsAsync(user);
-            _mapperMock.Setup(m => m.Map<User, UserDTO>(user)).Returns(userDto);
+            _mapperMock.Setup(m => m.Map<User, UserPublicDTO>(user)).Returns(userDto);
 
             // Act
             var result = await _userService.GetById(5);
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(5, result.UserID);
+            Assert.Equal(5, result.UserId);
         }
 
         [Fact]
-        public async Task LoginServices_ReturnsUserFromRepository()
+        public async Task IsUserNameExists_ReturnsTrue_WhenUserExists()
         {
             // Arrange
-            var user = new User { UserName = "login@test.com", Password = "123" };
-            _userRepoMock.Setup(repo => repo.Login(user)).ReturnsAsync(user);
+            _userRepoMock.Setup(repo => repo.IsUserNameExists("test@test.com")).ReturnsAsync(true);
 
             // Act
-            var result = await _userService.loginServices(user);
+            var result = await _userService.IsUserNameExists("test@test.com");
+
+            // Assert
+            Assert.True(result);
+            _userRepoMock.Verify(repo => repo.IsUserNameExists("test@test.com"), Times.Once);
+        }
+
+        [Fact]
+        public async Task LoginServices_ReturnsUserPublicDTO_WhenSuccessful()
+        {
+            // Arrange
+            var userLoginDto = new UserLoginDTO("login@test.com", "123");
+            var mappedUser = new User { UserName = "login@test.com", Password = "123" };
+            var returnedDto = new UserPublicDTO("login@test.com", "First", "Last", 1, "Phone", "Address", "Role");
+
+            _mapperMock.Setup(m => m.Map<UserLoginDTO, User>(It.IsAny<UserLoginDTO>())).Returns(mappedUser);
+            _userRepoMock.Setup(repo => repo.Login(It.IsAny<User>())).ReturnsAsync(mappedUser);
+            _mapperMock.Setup(m => m.Map<User, UserPublicDTO>(It.IsAny<User>())).Returns(returnedDto);
+
+            // Act
+            var result = await _userService.loginServices(userLoginDto);
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(user.UserName, result.UserName);
+            Assert.Equal(returnedDto.UserName, result.UserName);
+        }
+
+        [Fact]
+        public async Task LoginServices_ReturnsNull_WhenLoginFails()
+        {
+            // Arrange
+            var userLoginDto = new UserLoginDTO("wrong@test.com", "wrong");
+            var mappedUser = new User { UserName = "wrong@test.com", Password = "wrong" };
+
+            _mapperMock.Setup(m => m.Map<UserLoginDTO, User>(It.IsAny<UserLoginDTO>())).Returns(mappedUser);
+            _userRepoMock.Setup(repo => repo.Login(It.IsAny<User>())).ReturnsAsync((User)null);
+
+            // Act
+            var result = await _userService.loginServices(userLoginDto);
+
+            // Assert
+            Assert.Null(result);
         }
 
         [Fact]
@@ -144,18 +139,18 @@ namespace Tests
         {
             // Arrange
             var userId = 10;
-            var userDto = new UserDTO { UserID = userId, FirstName = "UpdatedName" };
+            var userDto = new UserRegisterDTO("update@test.com", "pass", "UpdatedName", "Last", "Phone", "Address");
             var mappedUser = new User { UserId = userId, FirstName = "UpdatedName" };
 
-            _mapperMock.Setup(m => m.Map<User>(userDto)).Returns(mappedUser);
-            _userRepoMock.Setup(repo => repo.Put(userId, mappedUser)).ReturnsAsync((Microsoft.AspNetCore.Mvc.ActionResult<User>)null);
+            _mapperMock.Setup(m => m.Map<UserRegisterDTO, User>(It.IsAny<UserRegisterDTO>())).Returns(mappedUser);
+            _userRepoMock.Setup(repo => repo.Put(userId, It.IsAny<User>())).ReturnsAsync((User)null);
 
             // Act
             await _userService.update(userDto, userId);
 
             // Assert
-            _mapperMock.Verify(m => m.Map<User>(userDto), Times.Once);
-            _userRepoMock.Verify(repo => repo.Put(userId, mappedUser), Times.Once);
+            _mapperMock.Verify(m => m.Map<UserRegisterDTO, User>(It.IsAny<UserRegisterDTO>()), Times.Once);
+            _userRepoMock.Verify(repo => repo.Put(userId, It.IsAny<User>()), Times.Once);
         }
     }
 }
