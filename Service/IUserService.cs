@@ -7,10 +7,11 @@ namespace Service
 {
     public interface IUserService
     {
-        Task<User> addUserServices(User user);
-        Task<UserDTO> GetById(int id);
-        Task<IEnumerable<UserDTO>> GetUsers();
-        Task<User> loginServices(User user);
-        Task update(UserDTO userDto, int id);
+        Task<UserPublicDTO> addUserServices(UserRegisterDTO registerDTO);
+        Task<UserPublicDTO> GetById(int id);
+        Task<IEnumerable<UserPublicDTO>> GetUsers();
+        Task<UserPublicDTO> loginServices(UserLoginDTO loginDTO);
+        Task update(UserRegisterDTO userDto, int id);
+        Task<bool> IsUserNameExists(string userName);
     }
 }

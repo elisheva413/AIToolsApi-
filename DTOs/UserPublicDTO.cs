@@ -8,9 +8,13 @@ namespace DTOs
 {
    public record UserPublicDTO
    (
-         string FirstName,
-         string LastName,
-         string UserName
+        string FirstName,
+        string LastName,
+        string UserName,
+        int UserId,
+        string Phone,
+        string Address,
+        string Role      
    );
     
 }

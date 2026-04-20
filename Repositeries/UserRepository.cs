@@ -88,10 +88,13 @@ namespace Repositeries
         {
             return await _store_215962135Context.Users.FindAsync(id);
         }
-
+        public async Task <bool> IsUserNameExists(string userName)
+        {
+            return await _store_215962135Context.Users.AnyAsync(u => u.UserName == userName);
+        }
         public async Task<User> AddUser(User user)
         {
-            await _store_215962135Context.Users.AddAsync(user);
+            //await _store_215962135Context.Users.AddAsync(user);
 
           
             if (string.IsNullOrEmpty(user.Role))
@@ -99,10 +102,11 @@ namespace Repositeries
                 user.Role = "User";
             }
 
+            await _store_215962135Context.Users.AddAsync(user);
             await _store_215962135Context.SaveChangesAsync();
             return user;
         }
-        public async Task<ActionResult<User>> Put(int id, [FromBody] User updatedUser)
+        public async Task<User> Put(int id, [FromBody] User updatedUser)
         {
             var existingUser = await _store_215962135Context.Users.FindAsync(id);
 
@@ -112,9 +116,8 @@ namespace Repositeries
                 existingUser.LastName = updatedUser.LastName;
                 existingUser.Phone = updatedUser.Phone;
                 existingUser.Address = updatedUser.Address;
-                existingUser.UserName = updatedUser.UserName;
+                //existingUser.UserName = updatedUser.UserName;
                 existingUser.Password = updatedUser.Password;
-
                 _store_215962135Context.Users.Update(existingUser);
                 await _store_215962135Context.SaveChangesAsync();
             }
@@ -124,10 +127,10 @@ namespace Repositeries
 
         public async Task<User> Login(User user)
         {
-            if (user == null || string.IsNullOrEmpty(user.UserName) || string.IsNullOrEmpty(user.Password))
-            {
-                return null;
-            }
+            //if (user == null || string.IsNullOrEmpty(user.UserName) || string.IsNullOrEmpty(user.Password))
+            //{
+            //    return null;
+            //}
 
             string userName = user.UserName.Trim();
             string password = user.Password;

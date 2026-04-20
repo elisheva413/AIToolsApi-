@@ -98,62 +98,66 @@ namespace WebApiShop.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private IUserService _userservice;
-        private ILogger<UsersController> _logger;
+        private readonly IUserService _userservice;
+        private readonly ILogger<UsersController> _logger;
+        private readonly IUserPasswordService _passwordService;
 
-        public UsersController(IUserService userservice, ILogger<UsersController> logger)
+
+
+        public UsersController(IUserService userservice, ILogger<UsersController> logger, IUserPasswordService passwordService)
         {
             _userservice = userservice;
+            _passwordService = passwordService; 
             _logger = logger;
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<User>> Post([FromBody] UserDTO userDto)
+        public async Task<ActionResult<UserPublicDTO>> Post([FromBody] UserRegisterDTO userRegistDto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            User user = new User
-            {
-                UserName = userDto.UserName, 
-                FirstName = userDto.FirstName,
-                LastName = userDto.LastName,
-                Password = userDto.Password,
-                Phone = userDto.Phone,
-                Address = userDto.Address
-            };
 
-            User acceptedUser = await _userservice.addUserServices(user);
-
-            if (acceptedUser == null)
+            int passwordScore = _passwordService.Level(userRegistDto.Password).Strength;
+            if (passwordScore < 2)
             {
-                return BadRequest("סיסמה חלשה או משתמש כבר קיים במערכת");
+                return BadRequest("הסיסמה חלשה מדי. אנא בחר סיסמה חזקה יותר.");
             }
 
-            return Ok(acceptedUser);
+            bool isExists = await _userservice.IsUserNameExists(userRegistDto.UserName);
+            if (isExists)
+            {
+                return BadRequest(" המשתמש כבר קיים במערכת. אנא בחר שם משתמש אחר.");
+            }
+          
+            UserPublicDTO acceptedUser = await _userservice.addUserServices(userRegistDto);
+
+            return CreatedAtAction(nameof(Get), new { id = acceptedUser.UserId }, acceptedUser);
+            //return Ok(acceptedUser);
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<UserDTO>> Login([FromBody] User user)
+        public async Task<ActionResult<UserPublicDTO>> Login([FromBody] UserLoginDTO userLoginDTO)
         {
 
-            if (string.IsNullOrEmpty(user.UserName) || string.IsNullOrEmpty(user.Password)) 
+            if (string.IsNullOrEmpty(userLoginDTO.UserName) || string.IsNullOrEmpty(userLoginDTO.Password)) 
             {
                 return BadRequest("חובה להזין שם משתמש וסיסמה"); 
             }
 
-            _logger.LogInformation($"Attempting login for: UserName='{user.UserName}'"); 
+            _logger.LogInformation($"Attempting login for: UserName='{userLoginDTO.UserName}'"); 
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            User _user = await _userservice.loginServices(user);
+            UserPublicDTO _user = await _userservice.loginServices(userLoginDTO);
 
             if (_user == null)
             {
-                _logger.LogWarning($"Login failed for: {user.UserName}"); 
+                _logger.LogWarning($"Login failed for: {userLoginDTO.UserName}"); 
                 return Unauthorized("פרטי התחברות שגויים או משתמש לא קיים");
             }
 
@@ -163,16 +167,21 @@ namespace WebApiShop.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] UserDTO userDto)
+        public async Task<IActionResult> Put(int id, [FromBody] UserRegisterDTO userRegistDto)
         {
-            await _userservice.update(userDto, id);
+            int passwordScore = _passwordService.Level(userRegistDto.Password).Strength;
+            if (passwordScore < 2)
+            {
+                return BadRequest("הסיסמה חלשה מדי.");
+            }
+            await _userservice.update(userRegistDto, id);
             return NoContent();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserDTO>> Get(int id)
+        public async Task<ActionResult<UserPublicDTO>> Get(int id)
         {
-            UserDTO user = await _userservice.GetById(id);
+            UserPublicDTO user = await _userservice.GetById(id);
             if (user == null)
                 return NoContent();
             return Ok(user);
