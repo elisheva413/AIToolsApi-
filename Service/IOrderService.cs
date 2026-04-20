@@ -5,7 +5,7 @@ namespace Service
 {
     public interface IOrderService
     {
-        Task<OrderDTO> AddOrder(Order order);
+        Task<OrderDTO> AddOrder(OrderCreateDTO orderDto);
         Task<OrderDTO?> GetOrderById(int id);
 
         Task<IEnumerable<OrderDTO>> GetAllOrders();

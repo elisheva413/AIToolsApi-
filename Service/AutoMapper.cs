@@ -20,19 +20,21 @@ namespace Service
             CreateMap<UserPublicDTO, UserLoginDTO>();
 
             CreateMap<Product, ProductDTO>().ReverseMap();
+            CreateMap<Product, ProductDTO>()
+               .ForMember(dest => dest.ProductsDescreption, opt => opt.MapFrom(src => src.ProductsDescreption))
+               .ReverseMap();
+
             CreateMap<Category, CategoryDTO>().ReverseMap();
+
             CreateMap<OrdersItem, OrderItemDTO>()
                 .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Products.ProductsName))
                 .ForMember(dest => dest.ProductImage, opt => opt.MapFrom(src => src.Products.ImgUrl))
-                .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Products.Price));
-
-            
+                .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Products.Price)); 
             CreateMap<Order, OrderDTO>().ReverseMap();
-            CreateMap<Product, ProductDTO>()
-                .ForMember(dest => dest.ProductsDescreption, opt => opt.MapFrom(src => src.ProductsDescreption))
-                .ReverseMap();
+            CreateMap<OrderCreateDTO, Order>();
+            CreateMap<OrderItemCreteDTO, OrdersItem>();
 
-            CreateMap<Category, CategoryDTO>().ReverseMap();
+
 
         }
     }

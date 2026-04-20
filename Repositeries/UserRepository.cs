@@ -94,8 +94,6 @@ namespace Repositeries
         }
         public async Task<User> AddUser(User user)
         {
-            //await _store_215962135Context.Users.AddAsync(user);
-
           
             if (string.IsNullOrEmpty(user.Role))
             {
@@ -127,11 +125,6 @@ namespace Repositeries
 
         public async Task<User> Login(User user)
         {
-            //if (user == null || string.IsNullOrEmpty(user.UserName) || string.IsNullOrEmpty(user.Password))
-            //{
-            //    return null;
-            //}
-
             string userName = user.UserName.Trim();
             string password = user.Password;
 

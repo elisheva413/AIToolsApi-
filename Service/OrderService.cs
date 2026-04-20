@@ -32,8 +32,9 @@ namespace Service
             return _mapper.Map<OrderDTO>(order);
         }
 
-        public async Task<OrderDTO> AddOrder(Order order)
+        public async Task<OrderDTO> AddOrder(OrderCreateDTO orderDto)
         {
+            Order order = _mapper.Map<Order>(orderDto);
             decimal totalSum = 0;
             foreach (var item in order.OrdersItems)
             {

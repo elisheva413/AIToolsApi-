@@ -33,9 +33,9 @@ namespace WebApiShop.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<OrderDTO>> AddOrder([FromBody] Order order)
+        public async Task<ActionResult<OrderDTO>> AddOrder([FromBody] OrderCreateDTO orderDto)
         {
-            OrderDTO _orderdto = await _orderService.AddOrder(order);
+            OrderDTO _orderdto = await _orderService.AddOrder(orderDto);
             if (_orderdto == null)
             {
                 return BadRequest("Payment Error: Order sum mismatch.");

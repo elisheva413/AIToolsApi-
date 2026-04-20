@@ -134,7 +134,6 @@ namespace WebApiShop.Controllers
             UserPublicDTO acceptedUser = await _userservice.addUserServices(userRegistDto);
 
             return CreatedAtAction(nameof(Get), new { id = acceptedUser.UserId }, acceptedUser);
-            //return Ok(acceptedUser);
         }
 
         [HttpPost("login")]

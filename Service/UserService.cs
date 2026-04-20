@@ -84,8 +84,6 @@ namespace Service
         {
             IEnumerable<User> users = await _userRepository.GetUsers();
             return _imapper.Map<IEnumerable<User>, IEnumerable<UserPublicDTO>>(users);
-            //IEnumerable<User> usersDto = _imapper.Map<IEnumerable<User>, IEnumerable<UserDTO>>(users);
-            //return usersDto;
         }
 
         public async Task<UserPublicDTO> GetById(int id)
@@ -104,20 +102,7 @@ namespace Service
             User user = _imapper.Map<UserRegisterDTO,User>(registerDTO);
             User createdUser = await _userRepository.AddUser(user);
             return _imapper.Map<User, UserPublicDTO>(createdUser);
-            //var usersList = await _IuserRepository.GetUsers();
-            //var existingUser = usersList.FirstOrDefault(u => u.UserName == user.UserName);
-
-            //if (existingUser != null)
-            //{
-            //    return null;
-            //}
-
-            //int score = _Ipasswordservice.Level(user.Password).Strength;
-            //if (score < 2)
-            //    return null;
-
-
-            //return await _IuserRepository.AddUser(existingUser);
+           
         }
 
         public async Task<UserPublicDTO> loginServices(UserLoginDTO LoginDTO)
