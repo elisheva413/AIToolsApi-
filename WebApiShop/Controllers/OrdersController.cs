@@ -18,12 +18,18 @@ namespace WebApiShop.Controllers
             _orderService = orderService;
         }
 
-        [HttpGet]
+        [HttpGet("all")]
         public async Task<ActionResult<IEnumerable<OrderDTO>>> GetAllOrders()
         {
             var orders = await _orderService.GetAllOrders();
             return Ok(orders);
         }
+        //[HttpGet]
+        //public async Task<ActionResult<IEnumerable<OrderDTO>>> GetAllOrders()
+        //{
+        //    var orders = await _orderService.GetAllOrders();
+        //    return Ok(orders);
+        //}
 
         [HttpGet("{id}")]
         public async Task<ActionResult<OrderDTO>> Get(int id)
