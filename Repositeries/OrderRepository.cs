@@ -66,6 +66,7 @@ namespace Repositeries
                 .Include(o => o.OrdersItems)
                     .ThenInclude(oi => oi.Products) 
                 .Include(o => o.User)
+                .Take(100)
                 .ToListAsync();
         }
 
@@ -75,6 +76,7 @@ namespace Repositeries
                 .Include(o => o.OrdersItems)
                     .ThenInclude(oi => oi.Products) 
                 .Where(o => o.UserId == userId)
+                .Take(100)
                 .ToListAsync();
         }
 
