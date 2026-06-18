@@ -38,6 +38,12 @@ builder.Services.AddAutoMapper(typeof(Service.AutoMappering));
 
 builder.Services.AddDbContext<Store_215962135Context>(options => options.UseSqlServer( builder.Configuration.GetConnectionString("MyWebApiShop")));
 
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration["Redis:ConnectionString"];
+    options.InstanceName = builder.Configuration["Redis:InstanceName"] ?? "WebApiShop:";
+});
+
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -54,6 +60,20 @@ builder.Host.UseNLog();
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<Store_215962135Context>();
+        context.Database.EnsureCreated(); // יוצר את ה-DB ואת הטבלאות אוטומטית אם הן לא קיימות במחשב החדש
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"DB Creation Error: {ex.Message}");
+    }
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -62,6 +82,8 @@ if (app.Environment.IsDevelopment())
         options.SwaggerEndpoint("/openapi/v1.json", "My API V1");
     });
 }
+
+app.UseStaticFiles();
 
 app.UseErrorHandlingMiddleware();
 
@@ -72,8 +94,6 @@ app.UseHttpsRedirection();
 app.UseRouting();
 
 app.UseCors("CorsPolicy");
-
-app.UseStaticFiles();
 
 app.UseAuthorization();
 
