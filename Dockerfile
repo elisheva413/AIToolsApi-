@@ -10,14 +10,14 @@ COPY ["DTOs/DTOs.csproj", "DTOs/"]
 RUN dotnet restore "WebApiShop/WebApiShop.csproj"
 
 COPY . .
-WORKDIR "/src/WebApiShop"
+WORKDIR /src/WebApiShop
 RUN dotnet publish "WebApiShop.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
-FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
-COPY --from=build /app/publish .
 
 ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
 
+COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "WebApiShop.dll"]
