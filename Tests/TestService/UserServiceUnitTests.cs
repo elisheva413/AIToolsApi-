@@ -2,6 +2,7 @@
 using DTOs;
 using Entities;
 using Moq;
+using Microsoft.Extensions.Configuration;
 using Repositeries;
 using Service;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ namespace Tests
         private readonly Mock<IUserRepository> _userRepoMock;
         private readonly Mock<IUserPasswordService> _passServiceMock;
         private readonly Mock<IMapper> _mapperMock;
+        private readonly Mock<IConfiguration> _configurationMock;
         private readonly UserService _userService;
 
         public UserServiceUnitTests()
@@ -22,7 +24,12 @@ namespace Tests
             _userRepoMock = new Mock<IUserRepository>();
             _passServiceMock = new Mock<IUserPasswordService>();
             _mapperMock = new Mock<IMapper>();
-            _userService = new UserService(_userRepoMock.Object, _passServiceMock.Object, _mapperMock.Object);
+            _configurationMock = new Mock<IConfiguration>();
+            _configurationMock.Setup(c => c["Jwt:Key"]).Returns("WebApiShop_Jwt_Key_For_Local_Dev_2026_Secure_Min32Chars");
+            _configurationMock.Setup(c => c["Jwt:Issuer"]).Returns("WebApiShop");
+            _configurationMock.Setup(c => c["Jwt:Audience"]).Returns("WebApiShopClient");
+            _configurationMock.Setup(c => c["Jwt:ExpiryMinutes"]).Returns("60");
+            _userService = new UserService(_userRepoMock.Object, _passServiceMock.Object, _mapperMock.Object, _configurationMock.Object);
         }
 
         [Fact]
@@ -42,7 +49,8 @@ namespace Tests
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(returnedDto.UserName, result.UserName);
+            Assert.Equal(returnedDto.UserName, result.User.UserName);
+            Assert.False(string.IsNullOrWhiteSpace(result.Token));
             _userRepoMock.Verify(repo => repo.AddUser(mappedUser), Times.Once);
         }
 
@@ -114,7 +122,8 @@ namespace Tests
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(returnedDto.UserName, result.UserName);
+            Assert.Equal(returnedDto.UserName, result.User.UserName);
+            Assert.False(string.IsNullOrWhiteSpace(result.Token));
         }
 
         [Fact]

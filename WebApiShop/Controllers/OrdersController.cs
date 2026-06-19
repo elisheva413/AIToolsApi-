@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Entities;
 using System.Collections.Generic;
 using Repositeries;
 using Service;
 using DTOs;
+using System.Security.Claims;
+using WebApiShop.Security;
 
 namespace WebApiShop.Controllers
 {
@@ -19,6 +22,7 @@ namespace WebApiShop.Controllers
         }
 
         [HttpGet("all")]
+        [RoleAuthorize("Admin")]
         public async Task<ActionResult<IEnumerable<OrderDTO>>> GetAllOrders()
         {
             var orders = await _orderService.GetAllOrders();
@@ -32,15 +36,44 @@ namespace WebApiShop.Controllers
         //}
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<OrderDTO>> Get(int id)
         {
             var order = await _orderService.GetOrderById(id);
-            return order == null ? NotFound() : Ok(order);
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            bool isAdmin = User.IsInRole("Admin");
+            int? currentUserId = GetCurrentUserId();
+            if (!isAdmin && (!currentUserId.HasValue || order.UserId != currentUserId.Value))
+            {
+                return Forbid();
+            }
+
+            return Ok(order);
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<OrderDTO>> AddOrder([FromBody] OrderCreateDTO orderDto)
         {
+            bool isAdmin = User.IsInRole("Admin");
+            int? currentUserId = GetCurrentUserId();
+            if (!isAdmin)
+            {
+                if (!currentUserId.HasValue)
+                {
+                    return Unauthorized("User id claim is missing.");
+                }
+
+                if (orderDto.UserId != currentUserId.Value)
+                {
+                    return Forbid();
+                }
+            }
+
             OrderDTO _orderdto = await _orderService.AddOrder(orderDto);
             if (_orderdto == null)
             {
@@ -50,13 +83,22 @@ namespace WebApiShop.Controllers
         }
 
         [HttpGet("user/{userId}")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<OrderDTO>>> GetOrdersByUserId(int userId)
         {
+            bool isAdmin = User.IsInRole("Admin");
+            int? currentUserId = GetCurrentUserId();
+            if (!isAdmin && (!currentUserId.HasValue || userId != currentUserId.Value))
+            {
+                return Forbid();
+            }
+
             var orders = await _orderService.GetOrdersByUserId(userId);
             return Ok(orders);
         }
 
         [HttpPut("{orderId}/status")]
+        [RoleAuthorize("Admin")]
         public async Task<ActionResult<OrderDTO>> UpdateOrderStatus(int orderId, [FromBody] string newStatus)
         {
             var validStatuses = new[] { "Paid", "Shipped", "Delivered" };
@@ -73,6 +115,12 @@ namespace WebApiShop.Controllers
             }
 
             return Ok(updatedOrder);
+        }
+
+        private int? GetCurrentUserId()
+        {
+            string? userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return int.TryParse(userIdClaim, out int userId) ? userId : null;
         }
 
     }

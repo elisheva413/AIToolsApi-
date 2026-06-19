@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using System;
 using System.Threading.Tasks;
 using DTOs;
@@ -18,6 +19,7 @@ namespace WebApiShop.Controllers
         }
 
         [HttpPost("send-giftcard")]
+        [Authorize]
         public async Task<IActionResult> SendGiftCardEmail([FromBody] GiftCardEmailRequest request)
         {
             try

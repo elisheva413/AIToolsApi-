@@ -1,9 +1,11 @@
 ﻿using DTOs;
 using Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Repositeries;
 using Service;
 using System.Collections.Generic;
+using WebApiShop.Security;
 
 
 
@@ -24,6 +26,7 @@ namespace WebApiShop.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<List<CategoryDTO>>> GetCategory()
         {
             List<CategoryDTO> categories = await _categoryService.GetCategory();

@@ -85,12 +85,15 @@
 //}
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Service;
 using Repositeries;
 using Entities;
 using System.Threading.Tasks;
 using DTOs;
 using Microsoft.Extensions.Logging;
+using System;
+using WebApiShop.Security;
 
 namespace WebApiShop.Controllers
 {
@@ -98,6 +101,7 @@ namespace WebApiShop.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
+        private const string AuthCookieName = "access_token";
         private readonly IUserService _userservice;
         private readonly ILogger<UsersController> _logger;
         private readonly IUserPasswordService _passwordService;
@@ -112,7 +116,8 @@ namespace WebApiShop.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<UserPublicDTO>> Post([FromBody] UserRegisterDTO userRegistDto)
+        [AllowAnonymous]
+        public async Task<ActionResult<AuthResponseDTO>> Post([FromBody] UserRegisterDTO userRegistDto)
         {
             if (!ModelState.IsValid)
             {
@@ -131,13 +136,15 @@ namespace WebApiShop.Controllers
                 return BadRequest(" המשתמש כבר קיים במערכת. אנא בחר שם משתמש אחר.");
             }
           
-            UserPublicDTO acceptedUser = await _userservice.addUserServices(userRegistDto);
+            AuthResponseDTO acceptedUser = await _userservice.addUserServices(userRegistDto);
+            SetAuthCookie(acceptedUser);
 
-            return CreatedAtAction(nameof(Get), new { id = acceptedUser.UserId }, acceptedUser);
+            return CreatedAtAction(nameof(Get), new { id = acceptedUser.User.UserId }, acceptedUser);
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<UserPublicDTO>> Login([FromBody] UserLoginDTO userLoginDTO)
+        [AllowAnonymous]
+        public async Task<ActionResult<AuthResponseDTO>> Login([FromBody] UserLoginDTO userLoginDTO)
         {
 
             if (string.IsNullOrEmpty(userLoginDTO.UserName) || string.IsNullOrEmpty(userLoginDTO.Password)) 
@@ -152,7 +159,7 @@ namespace WebApiShop.Controllers
                 return BadRequest(ModelState);
             }
 
-            UserPublicDTO _user = await _userservice.loginServices(userLoginDTO);
+            AuthResponseDTO _user = await _userservice.loginServices(userLoginDTO);
 
             if (_user == null)
             {
@@ -160,12 +167,14 @@ namespace WebApiShop.Controllers
                 return Unauthorized("פרטי התחברות שגויים או משתמש לא קיים");
             }
 
-            _logger.LogInformation($"Login success: UserName={_user.UserName}"); 
+            _logger.LogInformation($"Login success: UserName={_user.User.UserName}"); 
+            SetAuthCookie(_user);
 
             return Ok(_user);
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> Put(int id, [FromBody] UserRegisterDTO userRegistDto)
         {
             int passwordScore = _passwordService.Level(userRegistDto.Password).Strength;
@@ -178,12 +187,50 @@ namespace WebApiShop.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<UserPublicDTO>> Get(int id)
         {
             UserPublicDTO user = await _userservice.GetById(id);
             if (user == null)
                 return NoContent();
             return Ok(user);
+        }
+
+        [HttpGet("debug-cookie")]
+        [Authorize]
+        public IActionResult DebugCookie()
+        {
+            bool hasCookie = Request.Cookies.TryGetValue(AuthCookieName, out string? token) && !string.IsNullOrWhiteSpace(token);
+            if (!hasCookie)
+            {
+                return Ok(new
+                {
+                    HasCookie = false,
+                    Message = "Auth cookie was not found on this request."
+                });
+            }
+
+            string preview = token!.Length <= 20 ? token : token[..20];
+            return Ok(new
+            {
+                HasCookie = true,
+                TokenLength = token.Length,
+                TokenPreview = preview
+            });
+        }
+
+        private void SetAuthCookie(AuthResponseDTO authResponse)
+        {
+            bool isHttps = Request.IsHttps;
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = isHttps,
+                SameSite = isHttps ? SameSiteMode.None : SameSiteMode.Lax,
+                Expires = new DateTimeOffset(authResponse.ExpiresAtUtc)
+            };
+
+            Response.Cookies.Append(AuthCookieName, authResponse.Token, cookieOptions);
         }
 
     }

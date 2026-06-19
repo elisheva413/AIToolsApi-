@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Entities;
 using System.Collections.Generic;
 using Repositeries;
@@ -6,6 +7,7 @@ using Service;
 using DTOs;
 using static Service.IProductService;
 using AutoMapper;
+using WebApiShop.Security;
 
 
 
@@ -28,6 +30,7 @@ namespace WebApiShop.Controllers
             _env = env;
         }
         [HttpGet]
+        [AllowAnonymous]
         public async Task<ActionResult<FinalProducts>> GetProducts(
             [FromQuery] int[]? categoryId,
             [FromQuery] string? q,
@@ -54,6 +57,7 @@ namespace WebApiShop.Controllers
 
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<ActionResult<ProductDTO>> GetById(int id)
         {
             var productDto = await _productService.GetProductByIdAsync(id);
@@ -63,6 +67,7 @@ namespace WebApiShop.Controllers
 
         }
         [HttpPost]
+        [RoleAuthorize("Admin")]
         public async Task<ActionResult<ProductDTO>> Post([FromBody] ProductDTO productDto)
         {
             var product = _mapper.Map<Product>(productDto);
@@ -73,6 +78,7 @@ namespace WebApiShop.Controllers
         }
 
         [HttpPut("{id}")]
+        [RoleAuthorize("Admin")]
         public async Task<IActionResult> Put(int id, [FromBody] ProductDTO productDto)
         {
             var productToUpdate = _mapper.Map<Product>(productDto);
@@ -83,6 +89,7 @@ namespace WebApiShop.Controllers
         }
 
         [HttpDelete("{id}")]
+        [RoleAuthorize("Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             try
@@ -97,6 +104,7 @@ namespace WebApiShop.Controllers
         }
 
         [HttpPost("upload-image")]
+        [RoleAuthorize("Admin")]
         public async Task<IActionResult> UploadImage(IFormFile file)
         {
             if (file == null || file.Length == 0)

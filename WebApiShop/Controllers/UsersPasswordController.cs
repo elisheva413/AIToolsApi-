@@ -60,6 +60,7 @@
 //    }
 //}
 using Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Service;
 
@@ -94,6 +95,7 @@ namespace WebApiShop.Controllers
 
         // POST api/<passworsController>
         [HttpPost]
+        [AllowAnonymous]
         public ActionResult<UserPassword> Post([FromBody] string value)
         {
 
@@ -105,6 +107,7 @@ namespace WebApiShop.Controllers
 
         // PUT api/<passworsController>/5
         [HttpPut("{id}")]
+        [Authorize]
         public IActionResult Put(int id, [FromBody] string newPassword)
         {
             if (string.IsNullOrEmpty(newPassword))
