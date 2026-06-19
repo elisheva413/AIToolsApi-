@@ -6,3 +6,15 @@ services:
       - "6379:6379"
     command: ["redis-server", "--requirepass", "YourStrongPassword123"]
     restart: always
+  mongodb:
+    image: mongo:latest
+    container_name: webapishop-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+      - ./docker/mongo-init:/docker-entrypoint-initdb.d
+    restart: always
+
+volumes:
+  mongo_data:
