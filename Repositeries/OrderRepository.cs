@@ -18,7 +18,11 @@ namespace Repositeries
 
         public async Task<Order?> GetOrderById(int id)
         {
-            return await _store_215962135Context.Orders.FindAsync(id);
+            return await _store_215962135Context.Orders
+                .Include(o => o.OrdersItems)
+                    .ThenInclude(oi => oi.Products)
+                .Include(o => o.User)
+                .FirstOrDefaultAsync(o => o.OrderId == id);
         }
 
         public async Task<Order> AddOrder(Order order)

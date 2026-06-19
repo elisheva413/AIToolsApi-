@@ -11,14 +11,16 @@ namespace Service
     public class OrderService : IOrderService
     {
         private readonly IOrderRepository _orderRepository;
+        private readonly IKafkaProducerService _kafkaProducerService;
         private readonly IProductService _productService;
         IMapper _mapper;
         private readonly ILogger<OrderService> _logger;
 
-        public OrderService(IOrderRepository orderRepository, IProductService productService, IMapper mapper,ILogger<OrderService>logger)
+        public OrderService(IOrderRepository orderRepository, IProductService productService, IKafkaProducerService kafkaProducerService, IMapper mapper,ILogger<OrderService>logger)
         {
             _orderRepository = orderRepository;
             _productService = productService;
+            _kafkaProducerService = kafkaProducerService;
             _mapper = mapper;
             _logger = logger;
         }
@@ -53,8 +55,25 @@ namespace Service
 
             Order newOrder = await _orderRepository.AddOrder(order);
             var fullOrder = await _orderRepository.GetOrderById(newOrder.OrderId);
+            if (fullOrder == null)
+            {
+                _logger.LogError("Order {OrderId} was created but could not be loaded for Kafka publish.", newOrder.OrderId);
+                throw new InvalidOperationException("Created order could not be loaded for event publishing.");
+            }
+
             _logger.LogInformation($"Order {newOrder.OrderId} created successfully for UserID {newOrder.UserId} with total sum {totalSum}");
-            return _mapper.Map<Order, OrderDTO>(fullOrder);
+
+            OrderDTO createdOrderDto = _mapper.Map<Order, OrderDTO>(fullOrder);
+            var orderCreatedEvent = new OrderCreatedEventDTO(
+                createdOrderDto.OrderId,
+                createdOrderDto.UserId,
+                createdOrderDto.OrderDate,
+                createdOrderDto.OrderSum,
+                createdOrderDto.OrderStatus,
+                createdOrderDto.OrdersItems ?? new List<OrderItemDTO>());
+
+            await _kafkaProducerService.PublishOrderCreatedAsync(orderCreatedEvent);
+            return createdOrderDto;
         }
 
 
